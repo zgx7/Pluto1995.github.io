@@ -7,7 +7,7 @@
 <meta name="description" content="温故而知新">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634037921799">
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634039846402">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://unpkg.com/papercss@1.6.1/dist/paper.min.css" />
@@ -83,13 +83,15 @@
           <article class="article">
             <h1>MySql数据库</h1>
             <p class="article-meta">
-              2021-10-12
+              2020-10-12
               
-                <a href="https://pluto1995.github.io/tag/nYuOeWgwW/" class="badge ">
+                <a href="https://pluto1995.github.io/tag/nYuOeWgwW/" class="badge secondary">
                   Java
                 </a>
               
             </p>
+            
+              <img src="https://pluto1995.github.io//post-images/mysql-shu-ju-ku.jpg" alt="MySql数据库">
             
             <div class="post-content">
               <h1 id="mysql数据库">MySql数据库</h1>
@@ -120,7 +122,7 @@
 </thead>
 <tbody></tbody>
 </table>
-<figure data-type="image" tabindex="1"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012164458873.png" alt="image-20211012164458873" loading="lazy"></figure>
+<figure data-type="image" tabindex="1"><img src="https://pluto1995.github.io//post-images/1634038274007.png" alt="" loading="lazy"></figure>
 <h2 id="四-数据库的权限配置">四、数据库的权限配置</h2>
 <table>
 <thead>
@@ -241,7 +243,7 @@
 <pre><code class="language-xml">    和其它数据库相比，MySQL有点与众不同，它的架构可以在多种不同场景中应用并发挥良好作用。主要体现在   存储引擎的架构上，插件式的存储引擎架构将查询处理和其它的系统任务以及数据的存储提取相分离。
 		                    这种架构可以根据业务的需求和实际需要选择合适的存储引擎。
 </code></pre>
-<figure data-type="image" tabindex="2"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012182452794.png" alt="image-20211012182452794" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://pluto1995.github.io//post-images/1634038349855.png" alt="" loading="lazy"></figure>
 <h3 id="1-连接层">1. 连接层</h3>
 <table>
 <thead>
@@ -279,7 +281,7 @@
 </tr>
 </tbody>
 </table>
-<figure data-type="image" tabindex="3"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012183128270.png" alt="image-20211012183128270" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://pluto1995.github.io//post-images/1634038378864.png" alt="" loading="lazy"></figure>
 <h1 id="面试题where-and-having-区别">面试题：where and having 区别？</h1>
 <pre><code> where:
  	where是一个约束声明,使用where来约束来自数据库的数据;
@@ -388,10 +390,10 @@
 </tbody>
 </table>
 <h3 id="4-利用show-profiles-查看sql的执行周期">4. 利用show profiles 查看sql的执行周期</h3>
-<figure data-type="image" tabindex="4"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012191934575.png" alt="image-20211012191934575" loading="lazy"></figure>
-<figure data-type="image" tabindex="5"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012191942518.png" alt="image-20211012191942518" loading="lazy"></figure>
-<figure data-type="image" tabindex="6"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012191957097.png" alt="image-20211012191957097" loading="lazy"></figure>
-<figure data-type="image" tabindex="7"><img src="C:%5CUsers%5CPulto%5CDocuments%5Cblog_post%5Cimages%5Cimage-20211012192016273.png" alt="image-20211012192016273" loading="lazy"></figure>
+<p><img src="https://pluto1995.github.io//post-images/1634038412642.png" alt="" loading="lazy"><br>
+<img src="https://pluto1995.github.io//post-images/1634038423636.png" alt="" loading="lazy"><br>
+<img src="https://pluto1995.github.io//post-images/1634038430501.png" alt="" loading="lazy"><br>
+<img src="https://pluto1995.github.io//post-images/1634038437718.png" alt="" loading="lazy"></p>
 <h4 id="4-1-查询说明">4-1 查询说明</h4>
 <pre><code>	mysql的查询流程大致是：
 	首先，mysql客户端通过协议与mysql服务器建连接，发送查询语句，先检查查询缓存，如果命中，直接返回结果，否则进行语句解析，也就是说，在解析查询之前，服务器会先访问查询缓存(query cache)——它存储SELECT语句以及相应的查询结果集。
@@ -403,6 +405,7 @@
 	一条查询可以有很多种执行方式，最后都返回相同的结果。优化器的作用就是找到这其中最好的执行计划。 
 	然后，mysql默认使用的B+TREE索引，并且一个大致方向是：无论怎么折腾sql，至少在目前来说，mysql至少用到表中的一个索引。
 </code></pre>
+<figure data-type="image" tabindex="4"><img src="https://pluto1995.github.io//post-images/1634039787479.png" alt="" loading="lazy"></figure>
 <h1 id="拓展笛卡尔积">拓展：笛卡尔积</h1>
 <pre><code>笛卡尔积的定义：
 		 笛卡尔积在SQL中的实现方式既是交叉连接(Cross Join)  所有连接方式都会先生成临时笛卡尔积表，笛卡尔积是关系代数里的一个概念，                   表示两个表中的每一行数据任意组合,上图中两个表连接即为笛卡尔积(交叉连接)
@@ -423,9 +426,9 @@
               <div class="next">
                 下一篇
               </div>
-              <a href="https://pluto1995.github.io/post/hello-gridea/">
+              <a href="https://pluto1995.github.io/post/about/">
                 <h3 class="post-title">
-                  Hello Gridea
+                  关于
                 </h3>
               </a>
             </div>
@@ -436,7 +439,7 @@
 
       <div class="sm-12 md-4 col sidebar">
   <div class="paper info-container">
-    <img src="https://pluto1995.github.io//images/avatar.png?v=1634037921799" class="no-responsive avatar">
+    <img src="https://pluto1995.github.io//images/avatar.png?v=1634039846402" class="no-responsive avatar">
     <div class="text-muted">温故而知新</div>
     <div class="social-container">
       
@@ -486,12 +489,8 @@
     </div>
     <div class="row">
       
-        <a href="https://pluto1995.github.io/tag/nYuOeWgwW/" class="badge warning">
+        <a href="https://pluto1995.github.io/tag/nYuOeWgwW/" class="badge secondary">
           Java
-        </a>
-      
-        <a href="https://pluto1995.github.io/tag/XOMUbGXW3/" class="badge warning">
-          Gridea
         </a>
       
     </div>
