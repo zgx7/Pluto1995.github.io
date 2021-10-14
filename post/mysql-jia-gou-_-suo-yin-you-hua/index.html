@@ -1,0 +1,1073 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MySql架构_索引优化 | 清风拂杨柳丶</title>
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634197444311">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="MySql架构_索引优化 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="MySql架构_索引优化
+	主要涉及索引的创建，应用场景，风险规避，取舍规则等SQL优化问题。
+提高SQL优化能力，内含大量实例场景。
+
+一、索引优化分析
+
+
+
+存在的问题：
+
+
+
+
+Ø 数据过多——分库分表 mycat
+
+
+Ø 索引失效，..." />
+    <meta name="keywords" content="mysql" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://pluto1995.github.io/">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1634197444311" alt="">
+  </a>
+  <h1 class="site-title">
+    清风拂杨柳丶
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              MySql架构_索引优化
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-10-14
+              </span>
+              <span>
+                24 min read
+              </span>
+              
+                <a href="https://pluto1995.github.io/tag/kXtIZgjT8/" class="post-tag">
+                  # mysql
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="mysql架构_索引优化">MySql架构_索引优化</h1>
+<pre><code>	主要涉及索引的创建，应用场景，风险规避，取舍规则等SQL优化问题。
+提高SQL优化能力，内含大量实例场景。
+</code></pre>
+<h2 id="一-索引优化分析">一、索引优化分析</h2>
+<table>
+<thead>
+<tr>
+<th>存在的问题：</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 数据过多——分库分表 mycat</td>
+</tr>
+<tr>
+<td>Ø 索引失效，没有充分利用到索引——索引建立</td>
+</tr>
+<tr>
+<td>Ø 关联查询太多join（设计缺陷或不得已的需求）——SQL优化</td>
+</tr>
+<tr>
+<td>Ø 服务器调优及各个参数设置（缓冲、线程数等）——调整my.cnf</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-常见通用的join查询">1  常见通用的join查询</h3>
+<h4 id="11-sql执行顺序">1.1 SQL执行顺序</h4>
+<p>手写顺序</p>
+<pre><code>select 字段 from 表 left join 被驱动表 on 关联条件/外键 where 过滤条件 group by 分组字段  having 过滤条件[执行结果后进行过滤] order by 排序字段。
+</code></pre>
+<p>机读顺序</p>
+<pre><code>[FROM] [NO] [WHERE] [GROUP BY] [HAVING] [SELECT] [DISTINCT] [ORDER BY] [LIMIT]
+</code></pre>
+<p>总结： 鱼骨图<br>
+<img src="https://pluto1995.github.io//post-images/1634197069523.png" alt="" loading="lazy"></p>
+<h4 id="拓展关于group-by的理解">拓展：关于Group By的理解？</h4>
+<pre><code>	group by field：进行同名字段组合，其他字段如果存在多个，如果除分组字段外的其他字段中，有多个值，则只能通过聚合函数来查询，不然就报错，因为同一个字段不能查询到两个值。
+	group by field，filed：联合字段，将多个字段看作一个整体，整体一致才会合并。
+</code></pre>
+<h4 id="12-join-图-_7种实例实现">1.2 Join 图  _7种实例实现</h4>
+<figure data-type="image" tabindex="1"><img src="https://pluto1995.github.io//post-images/1634197089653.png" alt="" loading="lazy"></figure>
+<h5 id="121-创建sql-表">1.2.1 创建SQL 表</h5>
+<pre><code class="language-sql">CREATE TABLE `t_dept` (
+ `id` INT(11) NOT NULL AUTO_INCREMENT,
+ `deptName` VARCHAR(30) DEFAULT NULL,
+ `address` VARCHAR(40) DEFAULT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+ 
+CREATE TABLE `t_emp` (
+ `id` INT(11) NOT NULL AUTO_INCREMENT,
+ `name` VARCHAR(20) DEFAULT NULL,
+ `age` INT(3) DEFAULT NULL,
+ `deptId` INT(11) DEFAULT NULL,
+`empno` INT(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `idx_dept_id` (`deptId`)
+ #CONSTRAINT `fk_dept_id` FOREIGN KEY (`deptId`) REFERENCES `t_dept` (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO t_dept(id,deptName,address) VALUES(1,'华山','华山');
+INSERT INTO t_dept(id,deptName,address) VALUES(2,'丐帮','洛阳');
+INSERT INTO t_dept(id,deptName,address) VALUES(3,'峨眉','峨眉山');
+INSERT INTO t_dept(id,deptName,address) VALUES(4,'武当','武当山');
+INSERT INTO t_dept(id,deptName,address) VALUES(5,'明教','光明顶');
+INSERT INTO t_dept(id,deptName,address) VALUES(6,'少林','少林寺');
+
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(1,'风清扬',90,1,100001);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(2,'岳不群',50,1,100002);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(3,'令狐冲',24,1,100003);
+
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(4,'洪七公',70,2,100004);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(5,'乔峰',35,2,100005);
+
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(6,'灭绝师太',70,3,100006);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(7,'周芷若',20,3,100007);
+
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(8,'张三丰',100,4,100008);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(9,'张无忌',25,5,100009);
+INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(10,'韦小宝',18,NULL,100010);
+</code></pre>
+<h5 id="122-七种join-实现">1.2.2   七种JOIN 实现</h5>
+<table>
+<thead>
+<tr>
+<th>1 A、B两表共有(查询所有有部门的员工-&gt;员工和部门之间必须存在关联的数据)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>select  a.id,  a.name,  b.deptName  from  t_emp  a  inner  join  t_dept  b  on  a.deptId  = b.id;</td>
+</tr>
+<tr>
+<td><strong>2 A、B两表共有+A的独有（列出所有用户，并显示其机构信息）A的全集</strong></td>
+</tr>
+<tr>
+<td>select  a.id,  a.name,  b.deptName  from  t_emp  a  left  join  t_dept  b  on  a.deptId  = b.id;</td>
+</tr>
+<tr>
+<td><strong>3 A、B两表共有+B的独有（列出所有部门，并显示其部门的员工信息 ）B的全集</strong></td>
+</tr>
+<tr>
+<td>select  a.id,  a.name,  b.deptName  from  t_emp  a  right  join  t_dept  b  on  a.deptId  = b.id;</td>
+</tr>
+<tr>
+<td><strong>4 A的独有 （查询没有加入任何部门的员工）</strong></td>
+</tr>
+<tr>
+<td>SELECT * FROM t_emp a <strong>LEFT JOIN</strong> t_dept b ON a.deptid = b.id WHERE <strong>b.id IS NULL</strong></td>
+</tr>
+<tr>
+<td><strong>5 B的独有（查询没有任何员工的部门）</strong></td>
+</tr>
+<tr>
+<td>SELECT * FROM t_emp a <strong>RIGHT JOIN</strong> t_dept b ON a.deptid = b.id WHERE <strong>a.id IS NULL</strong> ;</td>
+</tr>
+<tr>
+<td><strong>6 AB全有（查询所有员工和所有部门）</strong></td>
+</tr>
+<tr>
+<td>SELECT * FROM t_emp a LEFT JOIN t_dept b ON a.deptid = b.id  <strong>UNION</strong>   SELECT * FROM t_emp a RIGHT JOIN t_dept b ON a.deptid = b.id ;  [ 注意 UNION ALL  表示显示所有字段，不会自动去重   <strong>2.UNION****在使用时，两张表的字段保证一致，如果不一致，请在slect后面列选字段，不要使用*</strong>]</td>
+</tr>
+<tr>
+<td><strong>7 A的独有+B的独有（查询没有加入任何部门的员工，以及查询出部门下没有任何员工的部门）</strong></td>
+</tr>
+<tr>
+<td>SELECT * FROM t_emp a LEFT JOIN t_dept b ON a.deptid = b.id WHERE b.id IS NULL  <strong>UNION</strong>   SELECT * FROM t_emp a RIGHT JOIN t_dept b ON a.deptid = b.id WHERE a.id IS NULL</td>
+</tr>
+</tbody>
+</table>
+<h5 id="123-拓展-掌门人">1.2.3  拓展 （掌门人）</h5>
+<table>
+<thead>
+<tr>
+<th>1. 增加掌门人字段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALTER TABLE t_dept ADD CEO INT(11);</td>
+</tr>
+<tr>
+<td>UPDATE t_dept SET CEO=2 WHERE id=1;</td>
+</tr>
+<tr>
+<td>UPDATE t_dept SET CEO=4 WHERE id=2;</td>
+</tr>
+<tr>
+<td>UPDATE t_dept SET CEO=6 WHERE id=3;</td>
+</tr>
+<tr>
+<td>UPDATE t_dept SET CEO=8 WHERE id=4;</td>
+</tr>
+<tr>
+<td>UPDATE t_dept SET CEO=9 WHERE id=5;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 练习</strong></p>
+<table>
+<thead>
+<tr>
+<th>1.  求各个门派对应的掌门人名称</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SELECT b.deptname,a.name FROM <strong>t_dept b</strong> LEFT JOIN <strong>t_emp a</strong> ON <strong>b.ceo = a.id</strong> ;</td>
+</tr>
+<tr>
+<td><strong>2.  求所有当上掌门人的平均年龄:</strong></td>
+</tr>
+<tr>
+<td>SELECT AVG(a.age) FROM t_emp a INNER JOIN t_dept b ON a.id = b.ceo ;</td>
+</tr>
+<tr>
+<td><strong>3. 求所有人，对应的掌门是谁</strong></td>
+</tr>
+<tr>
+<td>SELECT a.name,c.name AS ceoname FROM t_emp a   <br />LEFT JOIN t_dept b ON a.deptid = b.id    <br />LEFT JOIN t_emp c ON b.ceo = c.id ;</td>
+</tr>
+</tbody>
+</table>
+<h5 id="3-作业8个sql">3. 作业8个SQL</h5>
+<table>
+<thead>
+<tr>
+<th>#1、列出自己的掌门比自己年龄小的人员</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>select * from t_emp a left join t_dept b on a.deptId = b.id left join t_emp c on b.ceo = c.id where a.age&gt; c.age;</td>
+</tr>
+<tr>
+<td><strong>#2、列出所有年龄低于自己门派平均年龄的人员</strong></td>
+</tr>
+<tr>
+<td>select a.id,a.name,b.deptName,c.aage from t_emp a left join t_dept b on a.deptId=b.id left join (select deptId,avg(age) aage from t_emp group by deptId) c on a.deptId = c.deptId where a.age &lt; c.aage;</td>
+</tr>
+<tr>
+<td><strong>#3、列出至少有2个年龄大于40岁的成员的门派</strong></td>
+</tr>
+<tr>
+<td>SELECT b.<code>deptName</code>,COUNT(<em>) FROM t_emp a <br/> INNER JOIN t_dept b ON b.<code>id</code> = a.<code>deptId</code><br/> WHERE a.age &gt;40<br/> GROUP BY b.<code>deptName</code>,b.<code>id</code> <br/> HAVING COUNT(</em>)&gt;=2</td>
+</tr>
+<tr>
+<td><strong>#4、至少有2位非掌门人成员的门派</strong></td>
+</tr>
+<tr>
+<td>SELECT c.deptname,  c.id,COUNT(<em>) FROM t_emp a <br/>INNER JOIN t_dept c ON a.<code>deptId</code> =c.<code>id</code><br/>LEFT JOIN t_dept b ON a.<code>id</code>=b.<code>ceo</code><br/>WHERE b.<code>id</code> IS NULL<br/>GROUP BY c.<code>id</code> ,c.deptname<br/>HAVING COUNT(</em>)&gt;=2</td>
+</tr>
+<tr>
+<td>#5、列出全部人员，并增加一列备注“是否为掌门”，如果是掌门人显示是，不是掌门人显示否</td>
+</tr>
+<tr>
+<td>SELECT  a.<code>name</code>, CASE WHEN b.<code>id</code> IS NULL THEN '否' ELSE '是' END '是否为掌门'<br/>FROM  t_emp a <br/>LEFT JOIN t_dept b ON a.<code>id</code>=b.<code>ceo</code></td>
+</tr>
+<tr>
+<td><strong>#6、列出全部门派，并增加一列备注“老鸟or菜鸟”，若门派的平均值年龄&gt;50显示“老鸟”，否则显示“菜鸟”</strong></td>
+</tr>
+<tr>
+<td>SELECT b.<code>deptName</code>,<br/>IF (AVG(a.age)&gt;50,'老鸟','菜鸟')'老鸟or菜鸟'<br/> FROM t_emp a<br/>INNER JOIN t_dept b ON a.<code>deptId</code>= b.<code>id</code><br/> GROUP BY b.<code>id</code> ,b.<code>deptName</code></td>
+</tr>
+<tr>
+<td><strong>#7、显示每个门派年龄最大的人</strong></td>
+</tr>
+<tr>
+<td>SELECT NAME,age FROM t_emp a<br/>INNER JOIN<br/>(<br/>SELECT deptid,MAX(age) maxage<br/>FROM t_emp<br/>WHERE deptid IS NOT NULL<br/>GROUP BY deptid<br/>) aa ON a.<code>age</code>= aa.maxage AND a.<code>deptId</code>=aa.deptid</td>
+</tr>
+<tr>
+<td><strong>#8、显示每个门派年龄第二大的人</strong></td>
+</tr>
+<tr>
+<td>SET @rank=0;<br/>SET @last_deptid=0;<br/>SELECT * FROM<br/>(<br/> SELECT t.*,<br/>     IF(@last_deptid=deptid,@rank:=@rank+1,@rank:=1) AS rk,<br/>     @last_deptid:=deptid AS last_deptid<br/>    FROM t_emp t<br/>    ORDER BY deptid,age DESC<br/>) a WHERE a.rk &lt;=1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="二-索引介绍">二、索引介绍</h2>
+<p>什么是索引</p>
+<pre><code>1.	MySQL官方对索引的定义为：索引（Index）是帮助MySQL高效获取数据的数据结构。
+索引的本质：索引是数据结构。你可以简单理解为“排好序的快速查找数据结构”。
+</code></pre>
+<h3 id="1-详解">1. 详解</h3>
+<figure data-type="image" tabindex="2"><img src="https://pluto1995.github.io//post-images/1634197133178.png" alt="" loading="lazy"></figure>
+<table>
+<thead>
+<tr>
+<th>a. 左边是数据表，一共有两列七条记录，最左边的是数据记录的物理地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>b</strong>.为了加快Col2的查找，可以维护一个右边所示的<strong>二叉查找树</strong>，每个节点分别包含<strong>索引键值</strong>和一个指向对应数据记录物理地址的<strong>指针</strong>，这样就可以运用<strong>二叉查找</strong>在一定的<strong>复杂度内获取到相应数据</strong>，从而快速的检索出符合条件的记录。</td>
+</tr>
+<tr>
+<td><strong>总结： 我们可以通过查找树很快的查找出来 索引值，然后找到对应索引值的物理地址，从而获得其他数据。</strong><br />简单的来讲，索引就是目录，通过查找目录定位想要的数据，查目录比全词典扫描快。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="结论">结论</h4>
+<pre><code>	数据本身之外，数据库还维护着一个满足特定查找算法的数据结构，这些数据结构以某种方式指向数据， 这样就可以在这些数据结构的基础上实现高级查找算法，这种数据结构就是索引。
+</code></pre>
+<h4 id="11-存储">1.1 <strong>存储</strong></h4>
+<pre><code>一般来说索引本身也很大，不可能全部存储在内存中，因此索引往往以索引文件形式存储磁盘上
+</code></pre>
+<p>磁盘块和磁盘页</p>
+<table>
+<thead>
+<tr>
+<th>数据库<strong>索引是存储在磁盘上的</strong>，如果数据很大，必然导致索引的大小也会很大（好比新华字典字数多必然导致目录厚）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当我们利用索引查询时候，是不可能将全部几个G的索引都加载进内存的，为了降低内存开销，<br />InnoDB在把磁盘数据读入到内存时会   **以页（Page）**为基本单位。（一次I/O操作）</td>
+</tr>
+<tr>
+<td>每一个磁盘块在MySQL中是一个页，页大小是固定的，<br />MySQL InnoDB的默认的页大小是16k，每个索引会分配在页上的数量是由索引字段的大小决定。<br />当索引字段值的长度越长，每一页上的数量就会越少，因此在一定数据量的情况下，<br /><strong>[索引的深度会越深，影响索引的查找效率]</strong>。</td>
+</tr>
+<tr>
+<td>SHOW GLOBAL STATUS LIKE 'Innodb_page_size'; -- <strong>16KB</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="12-优势">1.2 优势</h4>
+<table>
+<thead>
+<tr>
+<th>Ø 类似大学图书馆建书目索引，提高数据检索的效率，降低数据库的IO成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 通过索引列对数据进行排序，降低数据排序的成本，降低了CPU的消耗</td>
+</tr>
+</tbody>
+</table>
+<h4 id="121-劣势">1.2.1 劣势</h4>
+<table>
+<thead>
+<tr>
+<th>Ø 实际上索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录，所以<strong>索引列也是要占用空间</strong>的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 虽然索引大大提高了查询速度，同时却会<strong>降低更新表的速度</strong>，如对表进行INSERT、UPDATE和DELETE。 <br />因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件每次更新添加了索引列的字段， 都会调整因为更新所带来的键值变化后的索引信息</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三-mysql-索引">三、 MySQL 索引</h2>
+<h3 id="1-聚簇索引与非聚簇索引">1.  聚簇索引与非聚簇索引</h3>
+<p>聚簇索引</p>
+<table>
+<thead>
+<tr>
+<th>Ø <strong>聚簇索引</strong>并不是一种单独的索引类型，而<strong>是一种数据存储方式</strong>。</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 术语‘聚簇’表示<strong>数据跟索引放在一起就是聚簇索引</strong>。</td>
+</tr>
+<tr>
+<td>总结： 数据跟索引放在一起，优化索引，让索引有序  ，查找的不是单一数据，而是邻近数据，有序情况不需要去其他数据库查找左右数据，从而能够减少I/O</td>
+</tr>
+</tbody>
+</table>
+<figure data-type="image" tabindex="3"><img src="https://pluto1995.github.io//post-images/1634197161041.png" alt="" loading="lazy"></figure>
+<p>聚簇索引的好处</p>
+<pre><code>•	按照聚簇索引排列顺序，查询显示一定范围数据的时候，由于数据都是紧密相连，数据库不用从多个数据块中提取数据，所以节省了大量的io操作。
+</code></pre>
+<p>聚簇索引的限制</p>
+<table>
+<thead>
+<tr>
+<th>·    对于MySQL数据库目前只有<strong>innodb</strong>数据引擎支持聚簇索引，而Myisam并不支持聚簇索引。</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>·    由于数据物理存储排序方式只能有一种，所以每个MySQL的表只能有一个聚簇索引。一般情况下就是该表的主键。</td>
+</tr>
+<tr>
+<td>·    为了充分利用聚<strong>簇</strong>索引的聚簇的特性，所以innodb表的主键列<strong>尽量选用有序的顺序id</strong>，而不建议用无序的id，比如uuid这种。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-mysql-索引分类">2. MySQL 索引分类</h3>
+<h4 id="21-单值索引">2.1 单值索引</h4>
+<pre><code>即一个索引只包含单个列，一个表可以有多个单列索引
+</code></pre>
+<pre><code class="language-mysql"># 随表一起建索引：
+CREATE TABLE customer (
+  id INT(10) UNSIGNED  AUTO_INCREMENT ,
+  customer_no VARCHAR(200),
+  customer_name VARCHAR(200),
+  PRIMARY KEY(id),    # 主键索引
+  KEY (customer_name), #  单值索引
+);
+# 单独建单值索引：
+CREATE INDEX idx_customer_name ON customer(customer_name); 
+# 删除索引：
+DROP INDEX idx_customer_name  on customer;
+
+</code></pre>
+<h4 id="22-唯一索引">2.2 唯一索引</h4>
+<pre><code>索引列的值必须唯一，但允许有空值
+</code></pre>
+<pre><code class="language-mysql"># 随表一起建索引：
+CREATE TABLE customer (
+  id INT(10) UNSIGNED  AUTO_INCREMENT ,
+  customer_no VARCHAR(200),
+  customer_name VARCHAR(200),
+  PRIMARY KEY(id),    # 主键索引
+  KEY (customer_name), #  单值索引
+  UNIQUE (customer_no) # 唯一索引
+);
+# 单独建唯一索引：
+CREATE UNIQUE INDEX idx_customer_no ON customer(customer_no); 
+# 删除索引：
+DROP INDEX idx_customer_no on customer ;
+</code></pre>
+<h4 id="23-主键索引">2.3 主键索引</h4>
+<pre><code>设定为主键后数据库会自动建立索引，innodb为聚簇索引
+</code></pre>
+<pre><code class="language-mysql"># 随表一起建索引：
+CREATE TABLE customer (
+  id INT(10) UNSIGNED  AUTO_INCREMENT ,
+  customer_no VARCHAR(200),
+  customer_name VARCHAR(200),
+  PRIMARY KEY(id) 
+);
+CREATE TABLE customer2 (
+  id INT(10) UNSIGNED   ,
+  customer_no VARCHAR(200),
+  customer_name VARCHAR(200) 
+);
+# 单独建主键索引：
+ALTER TABLE customer2 add PRIMARY KEY customer2(id);  
+# 删除主键索引：
+ALTER TABLE customer2 drop PRIMARY KEY ;  
+# 修改主键索引：
+# 必须先删除掉(drop)原索引，再新建(add)索引
+</code></pre>
+<h4 id="24-复合索引">2.4 复合索引</h4>
+<pre><code>即一个索引包含多个列
+</code></pre>
+<pre><code class="language-mysql"># 随表一起建索引：CREATE TABLE customer (  id INT(10) UNSIGNED  AUTO_INCREMENT ,  customer_no VARCHAR(200),  customer_name VARCHAR(200),  PRIMARY KEY(id),  KEY (customer_name),  UNIQUE (customer_name),  KEY (customer_no,customer_name)# 复合索引);# 单独建索引：CREATE INDEX idx_customer_no_name ON customer(customer_no,customer_name); # 删除索引：DROP INDEX idx_customer_no_name  on customer ;
+</code></pre>
+<h4 id="25-基本语法">2.5  基本语法</h4>
+<pre><code class="language-mysql">#1. 创建
+CREATE  [UNIQUE ] INDEX indexName ON mytable(column name(length)); 
+	# length ： 默认可以不用写
+    # 如果是CHAR，VARCHAR类型，length可以小于字段实际长度； 如果是BLOB和TEXT类型，必须指定length。
+	# ALTER mytable ADD  [UNIQUE ]  INDEX [indexName] ON (columnname(length)) 
+#2.	删除
+DROP INDEX [indexName] ON mytable; 
+#3.	查看
+SHOW INDEX FROM table_name
+#4.	使用ALTER命令
+	#	有四种方式来添加数据表的索引：
+ALTER TABLE tbl_name ADD PRIMARY KEY (column_list)
+# 该语句添加一个主键，这意味着索引值必须是唯一的，且不能为NULL。
+
+ALTER TABLE tbl_name ADD UNIQUE index_name (column_list)
+# 这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。
+
+ALTER TABLE tbl_name ADD INDEX index_name (column_list)
+# 添加普通索引，索引值可出现多次。
+
+ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
+# 该语句指定了索引为 FULLTEXT ，用于全文索引。了解
+</code></pre>
+<h4 id="26-需要创建索引的情况">2.6  需要创建索引的情况</h4>
+<table>
+<thead>
+<tr>
+<th><strong>1)  主键自动建立唯一索引</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2)  频繁作为查询条件的字段应该创建索引</strong></td>
+</tr>
+<tr>
+<td><strong>3)  查询中与其它表关联的字段，外键关系建立索引</strong></td>
+</tr>
+<tr>
+<td><strong>4)  单键/组合索引的选择问题，who？(在高并发下倾向创建组合索引)</strong></td>
+</tr>
+<tr>
+<td><strong>5)  查询中排序的字段，排序字段若通过索引去访问将大大提高排序速度</strong></td>
+</tr>
+<tr>
+<td><strong>6)  查询中统计或者分组字段</strong></td>
+</tr>
+</tbody>
+</table>
+<p>✳ <strong>总结： 频查询{复合}，有关联，有过滤，排序，分组 建立索引！</strong></p>
+<h4 id="27-哪些情况不要创建索引">2.7  哪些情况不要创建索引</h4>
+<table>
+<thead>
+<tr>
+<th>\1)   表记录太少</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300万数据时MySQL性能就开始下降了，这时就可以开始开始优化了</td>
+</tr>
+<tr>
+<td>\2)   经常增删改的表</td>
+</tr>
+<tr>
+<td>提高了查询速度，同时却会降低更新表的速度，如对表进行INSERT、UPDATE和DELETE。<br />因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件</td>
+</tr>
+<tr>
+<td>\3)   where条件里用不到的字段不创建索引</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-explain_查看执行计划">3.  Explain_查看执行计划</h3>
+<h4 id="31-mysql-query-optimizer">3.1   MySql Query Optimizer</h4>
+<pre><code>	MySQL中有专门负责优化SELECT语句的优化器模块，主要功能：通过计算分析系统中收集到的统计信息，为客户端请求的Query提供他认为最优的执行计划（他认为最优的数据检索方式，但不见得是DBA认为是最优的，这部分最耗费时间）
+
+	当客户端向MySQL 请求一条Query，命令解析器模块完成请求分类，区别出是 SELECT 并转发给MySQL Query Optimizer时，MySQL Query Optimizer 首先会对整条Query进行优化，处理掉一些常量表达式的预算，直接换算成常量值。并对 Query 中的查询条件进行简化和转换，如去掉一些无用或显而易见的条件、结构调整等。然后分析 Query 中的 Hint 信息（如果有），看显示Hint信息是否可以完全确定该Query 的执行计划。如果没有 Hint 或Hint 信息还不足以完全确定执行计划，则会读取所涉及对象的统计信息，根据 Query 进行写相应的计算分析，然后再得出最后的执行计划。 
+</code></pre>
+<h4 id="32-explain">3.2   Explain</h4>
+<p>是什么</p>
+<pre><code>使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是 如何处理你的SQL语句的。分析你的查询语句或是表结构的性能瓶颈
+
+	官网介绍 https://dev.mysql.com/doc/refman/5.7/en/explain-output.html
+</code></pre>
+<p>能干嘛</p>
+<table>
+<thead>
+<tr>
+<th>Ø 表的读取顺序                                       id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 数据读取操作的操作类型                  type</td>
+</tr>
+<tr>
+<td>Ø 哪些索引可以使用                      possible_keys</td>
+</tr>
+<tr>
+<td>Ø 哪些索引被实际使用                            key</td>
+</tr>
+<tr>
+<td>Ø 表之间的引用                                         ref</td>
+</tr>
+<tr>
+<td>Ø 每张表有多少行被优化器查询               rows</td>
+</tr>
+</tbody>
+</table>
+<p>怎么玩</p>
+<pre><code>Explain + SQL 语句；
+</code></pre>
+<figure data-type="image" tabindex="4"><img src="https://pluto1995.github.io//post-images/1634197241207.png" alt="" loading="lazy"></figure>
+<p><strong>EXPLAIN****输出项（来源于mysql5.7文档）</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>Column</strong></th>
+<th><strong>JSON Name</strong></th>
+<th><strong>Meaning</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>id</strong></td>
+<td>select_id</td>
+<td>The SELECT  identifier</td>
+</tr>
+<tr>
+<td>select_type</td>
+<td>None</td>
+<td>The SELECT  type</td>
+</tr>
+<tr>
+<td>table</td>
+<td>table_name</td>
+<td>The table  for the output row</td>
+</tr>
+<tr>
+<td>partitions</td>
+<td>partitions</td>
+<td>The  matching partitions</td>
+</tr>
+<tr>
+<td><strong>type</strong></td>
+<td>access_type</td>
+<td>The join  type</td>
+</tr>
+<tr>
+<td>possible_keys</td>
+<td>possible_keys</td>
+<td>The  possible indexes to choose</td>
+</tr>
+<tr>
+<td><strong>key</strong></td>
+<td>key</td>
+<td>The index  actually chosen</td>
+</tr>
+<tr>
+<td><strong>key_len</strong></td>
+<td>key_length</td>
+<td>The length  of the chosen key</td>
+</tr>
+<tr>
+<td><strong>ref</strong></td>
+<td>ref</td>
+<td>The  columns compared to the index</td>
+</tr>
+<tr>
+<td>rows</td>
+<td>rows</td>
+<td>Estimate  of rows to be examined</td>
+</tr>
+<tr>
+<td>filtered</td>
+<td>filtered</td>
+<td>Percentage  of rows filtered by table condition</td>
+</tr>
+<tr>
+<td><strong>Extra</strong></td>
+<td>None</td>
+<td>Additional  information</td>
+</tr>
+</tbody>
+</table>
+<h4 id="33-explain_各字段解释">3.3  explain_各字段解释</h4>
+<h5 id="1-id">①  id</h5>
+<pre><code>1.	select查询的序列号,包含一组数字，表示查询中执行select子句或操作表的顺序
+</code></pre>
+<ol>
+<li>
+<p>三种情况</p>
+<table>
+<thead>
+<tr>
+<th>1)   id相同，执行顺序由上至下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explain select * from t1,t2,t3;</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<figure data-type="image" tabindex="5"><img src="https://pluto1995.github.io//post-images/1634197259401.png" alt="" loading="lazy"></figure>
+<table>
+<thead>
+<tr>
+<th>2)   id不同，3) 如果是子查询，id的序号会递增，id值越大优先级越高，越先被执行</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>explain select t1.id from t1 where t1.id = (select t2.id from t2 where t2.id = (select t3.id from t3));</td>
+</tr>
+</tbody>
+</table>
+<figure data-type="image" tabindex="6"><img src="https://pluto1995.github.io//post-images/1634197277753.png" alt="" loading="lazy"></figure>
+<ol>
+<li>
+<p>总结</p>
+<table>
+<thead>
+<tr>
+<th>Ø id相同，不同，同时存在;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø id如果相同，可以认为是一组，从上往下顺序执行；</td>
+</tr>
+<tr>
+<td>Ø 在所有组中，id值越大，优先级越高，越先执行;</td>
+</tr>
+<tr>
+<td>Ø 关注点：id号每个号码，表示一趟独立的查询。一个sql的查询趟数越少越好。</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<h5 id="2-select_type">②    select_type</h5>
+<p>a. 有哪些<br>
+<img src="https://pluto1995.github.io//post-images/1634197290013.png" alt="" loading="lazy"></p>
+<p>b.  查询的类型，主要是用于区别 普通查询、联合查询、子查询等的复杂查询</p>
+<table>
+<thead>
+<tr>
+<th>1)   SIMPLE                                                            •	简单的 select 查询,  查询中  不包含  子查询或者UNION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2)   PRIMARY                                                          •	查询中若包含任何复杂的子部分，最外层查询则被标记为primary</strong></td>
+</tr>
+<tr>
+<td><strong>3)   SUBQUERY                                                       •	在SELECT或WHERE列表中包含了子查询</strong></td>
+</tr>
+<tr>
+<td><strong>4)   DEPENDENT SUBQUERY                                •	  在SELECT或WHERE列表中包含了子查询,子查询基于外层</strong></td>
+</tr>
+<tr>
+<td><strong>5)   UNCACHEABLE SUBQUREY                            •	表示这个subquery的查询要受到外部系统变量的影响</strong></td>
+</tr>
+<tr>
+<td><strong>6)   UNION                                                               •	若第二个SELECT出现在UNION之后，则被标记为UNION； <br />                                                                               若UNION包含在FROM子句的子查询中,外层SELECT将被标记为：DERIVED</strong></td>
+</tr>
+<tr>
+<td><strong>7)   UNION RESULT                                                •	从UNION表获取结果的SELECT</strong></td>
+</tr>
+</tbody>
+</table>
+<h5 id="3-table">③  table</h5>
+<pre><code>表示这一行是查询的哪张表             •	显示这一行的数据是关于哪张表的
+</code></pre>
+<h5 id="4-partitions">④  partitions</h5>
+<pre><code>•	代表分区表中的命中情况，非分区表，该项为null
+•	https://dev.mysql.com/doc/refman/5.7/en/alter-table-partition-operations.html
+</code></pre>
+<h5 id="5-type">⑤  type★</h5>
+<figure data-type="image" tabindex="7"><img src="https://pluto1995.github.io//post-images/1634197304202.png" alt="" loading="lazy"></figure>
+<table>
+<thead>
+<tr>
+<th>\1.   访问类型排列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type显示的是访问类型，是较为重要的一个指标，结果值<strong>从最好到最坏依次是</strong>： <br />【system &gt; const &gt; eq_ref &gt; ref &gt; fulltext &gt; ref_or_null &gt; index_merge &gt; unique_subquery &gt; index_subquery &gt; range &gt; index &gt; ALL 】<br />                                    <strong>system&gt;const&gt;eq_ref&gt;ref&gt;range&gt;index&gt;ALL</strong><br />                           一般来说，得保证查询至少达到<strong>range</strong>级别，最好能达到<strong>ref</strong>。</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>类型介绍</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>1  system</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>表仅有<strong>一行记录</strong>，必须是系统表，这是const类型的特例，查询起来非常迅速。</td>
+</tr>
+<tr>
+<td><strong>2  const</strong></td>
+</tr>
+<tr>
+<td>表示通过索引一次就找到了,const用于primary key或者unique索引。<br />o	因为只匹配一行数据，所以很快 如将主键置于where列表中，MySQL就能将该查询转换为一个常量</td>
+</tr>
+<tr>
+<td><strong>3  eq_ref</strong></td>
+</tr>
+<tr>
+<td>唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配。常见主键或唯一索引扫描</td>
+</tr>
+<tr>
+<td><strong>4  ref</strong></td>
+</tr>
+<tr>
+<td>非唯一性索引扫描，返回匹配某个单独值的所有行.<br /> 本质上也是一种索引访问，它返回所有匹配某个单独值的行，然而 它可能会找到多个符合条件的行，<br />所以他应该属于查找和扫描的混合体</td>
+</tr>
+<tr>
+<td><strong>5  range</strong></td>
+</tr>
+<tr>
+<td>只检索给定范围的行,使用一个索引来选择行。<br />o	key 列显示使用了哪个索引 一般就是在你的where语句中出现了between、&lt;、&gt;、in等的查询 这种范围索引扫描比全表扫描要好，因为它只需要开始于索引的某一点，而结束语另一点，不用扫描全部索引。</td>
+</tr>
+<tr>
+<td><strong>6  Index</strong></td>
+</tr>
+<tr>
+<td>出现index是sql使用了索引但是没用通过索引进行过滤，一般是使用了<strong>覆盖索引</strong>或者是利用索引进行了排序分组<br />o	Full Index Scan，index与ALL区别为index类型只遍历索引树。<br />o	这通常比ALL快，因为索引文件通常比数据文件小。 <br />o	也就是说虽然all和Index都是读全表，但index是从索引中读取的，而all是从硬盘中读的</td>
+</tr>
+<tr>
+<td><strong>7  all</strong></td>
+</tr>
+<tr>
+<td>Full Table Scan，将遍历全表以找到匹配的行</td>
+</tr>
+</tbody>
+</table>
+<h5 id="6-possible_keys">⑥  possible_keys</h5>
+<pre><code>o	显示可能应用在这张表中的索引，一个或多个。 查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用
+</code></pre>
+<h5 id="7-key">⑦   key</h5>
+<pre><code>o	实际使用的索引。如果为NULL，则没有使用索引
+</code></pre>
+<h5 id="8-key_len-值越大越好">⑧ key_len ★  值越大越好。</h5>
+<pre><code>o	key_len表示索引使用的字节数，根据这个值可以判断索引的使用情况，特别是在组合索引的时候，判断该索引有多少部分被使用到非常重要。
+	值越大越好。
+</code></pre>
+<p>如何计算<br>
+<img src="https://pluto1995.github.io//post-images/1634197347168.png" alt="" loading="lazy"></p>
+<h5 id="9-ref">⑨   ref</h5>
+<pre><code>显示将哪些列或常量与键列中命名的索引进行比较，以从表中选择行。
+</code></pre>
+<h5 id="10-rows-值越小越好">⑩   rows★  值越小越好</h5>
+<pre><code>o	rows列显示MySQL认为它执行查询时必须检查的行数。值越小越好
+</code></pre>
+<h5 id="a-filtered">a.  filtered</h5>
+<pre><code>o	这个字段表示存储引擎返回的数据在mysql server层过滤后，剩下多少满足查询的记录数量的比例，
+注意是百分比，不是具体记录数
+</code></pre>
+<h5 id="b-extra">b. Extra ★</h5>
+<pre><code>o	包含不适合在其他列中显示,但十分重要的额外信息
+</code></pre>
+<pre><code>★ mysql会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。 MySQL中无法利用索引完成的排序操作称为“文件排序”
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Using filesort *</th>
+<th>出现filesort的情况：<strong>order    by</strong> <strong>没有用上索引</strong>。</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>**Using temporary ***</td>
+<td>出现Using temporary情况：<strong>分组没有用上索引</strong>。产生临时表。<br />注意：<strong>分组操作是需要先排序后分组的</strong>。所以，也会出现Using filesort。</td>
+</tr>
+<tr>
+<td>**Using index ***</td>
+<td><strong>表示使用了覆盖索引 [content是一个索引]</strong></td>
+</tr>
+<tr>
+<td>Using where</td>
+<td>o  表明使用了where过滤！</td>
+</tr>
+<tr>
+<td>using join buffer *</td>
+<td>如果有它则表明关联字段<strong>没有</strong>使用索引！</td>
+</tr>
+<tr>
+<td>impossible where</td>
+<td>where 后面筛选条件有错误！</td>
+</tr>
+</tbody>
+</table>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#mysql%E6%9E%B6%E6%9E%84_%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96">MySql架构_索引优化</a>
+<ul>
+<li><a href="#%E4%B8%80-%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90">一、索引优化分析</a>
+<ul>
+<li><a href="#1-%E5%B8%B8%E8%A7%81%E9%80%9A%E7%94%A8%E7%9A%84join%E6%9F%A5%E8%AF%A2">1  常见通用的join查询</a>
+<ul>
+<li><a href="#11-sql%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F">1.1 SQL执行顺序</a></li>
+<li><a href="#%E6%8B%93%E5%B1%95%E5%85%B3%E4%BA%8Egroup-by%E7%9A%84%E7%90%86%E8%A7%A3">拓展：关于Group By的理解？</a></li>
+<li><a href="#12-join-%E5%9B%BE-_7%E7%A7%8D%E5%AE%9E%E4%BE%8B%E5%AE%9E%E7%8E%B0">1.2 Join 图  _7种实例实现</a>
+<ul>
+<li><a href="#121-%E5%88%9B%E5%BB%BAsql-%E8%A1%A8">1.2.1 创建SQL 表</a></li>
+<li><a href="#122-%E4%B8%83%E7%A7%8Djoin-%E5%AE%9E%E7%8E%B0">1.2.2   七种JOIN 实现</a></li>
+<li><a href="#123-%E6%8B%93%E5%B1%95-%E6%8E%8C%E9%97%A8%E4%BA%BA">1.2.3  拓展 （掌门人）</a></li>
+<li><a href="#3-%E4%BD%9C%E4%B8%9A8%E4%B8%AAsql">3. 作业8个SQL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E7%B4%A2%E5%BC%95%E4%BB%8B%E7%BB%8D">二、索引介绍</a>
+<ul>
+<li><a href="#1-%E8%AF%A6%E8%A7%A3">1. 详解</a>
+<ul>
+<li><a href="#%E7%BB%93%E8%AE%BA">结论</a></li>
+<li><a href="#11-%E5%AD%98%E5%82%A8">1.1 <strong>存储</strong></a></li>
+<li><a href="#12-%E4%BC%98%E5%8A%BF">1.2 优势</a></li>
+<li><a href="#121-%E5%8A%A3%E5%8A%BF">1.2.1 劣势</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-mysql-%E7%B4%A2%E5%BC%95">三、 MySQL 索引</a>
+<ul>
+<li><a href="#1-%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E4%B8%8E%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95">1.  聚簇索引与非聚簇索引</a></li>
+<li><a href="#2-mysql-%E7%B4%A2%E5%BC%95%E5%88%86%E7%B1%BB">2. MySQL 索引分类</a>
+<ul>
+<li><a href="#21-%E5%8D%95%E5%80%BC%E7%B4%A2%E5%BC%95">2.1 单值索引</a></li>
+<li><a href="#22-%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95">2.2 唯一索引</a></li>
+<li><a href="#23-%E4%B8%BB%E9%94%AE%E7%B4%A2%E5%BC%95">2.3 主键索引</a></li>
+<li><a href="#24-%E5%A4%8D%E5%90%88%E7%B4%A2%E5%BC%95">2.4 复合索引</a></li>
+<li><a href="#25-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95">2.5  基本语法</a></li>
+<li><a href="#26-%E9%9C%80%E8%A6%81%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%E7%9A%84%E6%83%85%E5%86%B5">2.6  需要创建索引的情况</a></li>
+<li><a href="#27-%E5%93%AA%E4%BA%9B%E6%83%85%E5%86%B5%E4%B8%8D%E8%A6%81%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95">2.7  哪些情况不要创建索引</a></li>
+</ul>
+</li>
+<li><a href="#3-explain_%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92">3.  Explain_查看执行计划</a>
+<ul>
+<li><a href="#31-mysql-query-optimizer">3.1   MySql Query Optimizer</a></li>
+<li><a href="#32-explain">3.2   Explain</a></li>
+<li><a href="#33-explain_%E5%90%84%E5%AD%97%E6%AE%B5%E8%A7%A3%E9%87%8A">3.3  explain_各字段解释</a>
+<ul>
+<li><a href="#1-id">①  id</a></li>
+<li><a href="#2-select_type">②    select_type</a></li>
+<li><a href="#3-table">③  table</a></li>
+<li><a href="#4-partitions">④  partitions</a></li>
+<li><a href="#5-type">⑤  type★</a></li>
+<li><a href="#6-possible_keys">⑥  possible_keys</a></li>
+<li><a href="#7-key">⑦   key</a></li>
+<li><a href="#8-key_len-%E5%80%BC%E8%B6%8A%E5%A4%A7%E8%B6%8A%E5%A5%BD">⑧ key_len ★  值越大越好。</a></li>
+<li><a href="#9-ref">⑨   ref</a></li>
+<li><a href="#10-rows-%E5%80%BC%E8%B6%8A%E5%B0%8F%E8%B6%8A%E5%A5%BD">⑩   rows★  值越小越好</a></li>
+<li><a href="#a-filtered">a.  filtered</a></li>
+<li><a href="#b-extra">b. Extra ★</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://pluto1995.github.io/post/guan-yu-group-by-de-li-jie/">
+              <h3 class="post-title">
+                关于Group By的理解
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://pluto1995.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
