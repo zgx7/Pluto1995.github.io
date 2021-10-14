@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySql架构_索引优化 | 清风拂杨柳丶</title>
-<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634198020930">
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634200310237">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="MySql架构_索引优化 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
@@ -37,7 +37,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://pluto1995.github.io/">
-  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1634198020930" alt="">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1634200310237" alt="">
   </a>
   <h1 class="site-title">
     清风拂杨柳丶
@@ -518,7 +518,15 @@ ALTER TABLE customer2 drop PRIMARY KEY ;
 <h4 id="24-复合索引">2.4 复合索引</h4>
 <pre><code>即一个索引包含多个列
 </code></pre>
-<pre><code class="language-mysql"># 随表一起建索引：CREATE TABLE customer (  id INT(10) UNSIGNED  AUTO_INCREMENT ,  customer_no VARCHAR(200),  customer_name VARCHAR(200),  PRIMARY KEY(id),  KEY (customer_name),  UNIQUE (customer_name),  KEY (customer_no,customer_name)# 复合索引);# 单独建索引：CREATE INDEX idx_customer_no_name ON customer(customer_no,customer_name); # 删除索引：DROP INDEX idx_customer_no_name  on customer ;
+<pre><code class="language-mysql"># 随表一起建索引：
+CREATE TABLE customer (  id INT(10) UNSIGNED  AUTO_INCREMENT ,  customer_no VARCHAR
+(200),  customer_name VARCHAR(200),  PRIMARY KEY(id),  KEY (customer_name),  UNIQUE 
+(customer_name),
+  KEY (customer_no,customer_name)# 复合索引);
+# 单独建索引：
+CREATE INDEX idx_customer_no_name ON customer(customer_no,customer_name);
+ # 删除索引：
+ DROP INDEX idx_customer_no_name  on customer ;
 </code></pre>
 <h4 id="25-基本语法">2.5  基本语法</h4>
 <pre><code class="language-mysql">#1. 创建
