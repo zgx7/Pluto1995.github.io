@@ -1,0 +1,904 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MyCat_数据库中间件 | 清风拂杨柳丶</title>
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1634307540903">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="MyCat_数据库中间件 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="MyCat_数据库中间件
+一、是什么
+Mycat是数据库中间件。
+
+1.  MyCat的由来
+	Cobar属于阿里B2B事业群，始于2008年，在阿里服役3年多，接管3000+个MySQL数据库的schema,集群日处理在线SQL请求50亿..." />
+    <meta name="keywords" content="mysql" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://pluto1995.github.io/">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1634307540903" alt="">
+  </a>
+  <h1 class="site-title">
+    清风拂杨柳丶
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              MyCat_数据库中间件
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-10-15
+              </span>
+              <span>
+                26 min read
+              </span>
+              
+                <a href="https://pluto1995.github.io/kXtIZgjT8/" class="post-tag">
+                  # mysql
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="mycat_数据库中间件">MyCat_数据库中间件</h1>
+<h2 id="一-是什么">一、是什么</h2>
+<pre><code>Mycat是数据库中间件。
+</code></pre>
+<h3 id="1-mycat的由来">1.  MyCat的由来</h3>
+<pre><code>	Cobar属于阿里B2B事业群，始于2008年，在阿里服役3年多，接管3000+个MySQL数据库的schema,集群日处理在线SQL请求50亿次以上。由于Cobar发起人的离职，Cobar停止维护。
+	Mycat是开源社区在阿里cobar基础上进行二次开发，解决了cobar存在的问题，并且加入了许多新的功能在其中。
+</code></pre>
+<p>官网</p>
+<pre><code>http://www.mycat.io/
+</code></pre>
+<h2 id="二-干什么">二、 干什么</h2>
+<h3 id="11-读写分离">1.1  读写分离</h3>
+<figure data-type="image" tabindex="1"><img src="https://pluto1995.github.io//post-images/1634304341549.png" alt="" loading="lazy"></figure>
+<h3 id="12-数据分片">1.2  数据分片</h3>
+<pre><code>垂直拆分（分库）、水平拆分（分表）、垂直+水平拆分（分库分表）
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://pluto1995.github.io//post-images/1634304366293.png" alt="" loading="lazy"></figure>
+<h3 id="13-多数据源整合">1.3  多数据源整合</h3>
+<figure data-type="image" tabindex="3"><img src="https://pluto1995.github.io//post-images/1634304376942.png" alt="" loading="lazy"></figure>
+<h2 id="三-作用原理">三、 作用原理</h2>
+<table>
+<thead>
+<tr>
+<th>Mycat 的原理中最重要的一个动词是“拦截”</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>它拦截了用户发送过来的 SQL 语句，首先对 SQL 语句做了一些特定的分析</td>
+</tr>
+<tr>
+<td>如分片分析、路由分析、读写分离分析、缓存分析等</td>
+</tr>
+<tr>
+<td>然后将此 SQL 发往后端的真实数据库，并将返回的结果做适当的处理，最终再返回给用户。</td>
+</tr>
+</tbody>
+</table>
+<figure data-type="image" tabindex="4"><img src="https://pluto1995.github.io//post-images/1634304392122.png" alt="" loading="lazy"></figure>
+<pre><code>这种方式把数据库的分布式从代码中解耦出来，程序员察觉不出来后台使用Mycat还是MySQL。
+</code></pre>
+<h2 id="个人总结"><strong>个人总结</strong></h2>
+<pre><code>	1. 数据库的表会随着时间逐渐增大，因为实际操作删除数据的情况很少，大都执行逻辑删除，而且有些数据长时间堆积难以使用，所以数据库的存储、利用压力就会逐渐增大，需要搭建多态数据库来缓解压力，但是其中又牵扯到数据的分配，迁移问题，所以MyCat就是来优化这一过程，不过是通过设计架构来实现；  MyCat的作用分库，分表来避免或者改善上述情况的出现；
+
+	2. 大前提 --- 无法在不同主机上的不同数据库进行表的关联
+	
+后面做 分库 分表的 总结和思考。
+</code></pre>
+<h2 id="四-安装启动">四、 安装启动</h2>
+<h3 id="1-安装">1.  安装</h3>
+<h4 id="11-解压-tar-文件即可安装使用">1.1  解压 tar 文件即可安装使用</h4>
+<pre><code>解压缩文件拷贝到linux下 /usr/local/
+</code></pre>
+<h4 id="12-三个配置文件">1.2  三个配置文件</h4>
+<table>
+<thead>
+<tr>
+<th>配置文件可以通过window [宿主机] 备份的形式进行，复制-备份-修改-回传-覆盖-重启，来执行配置文件的修改</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①schema.xml：定义逻辑库，表、分片节点等内容</td>
+</tr>
+<tr>
+<td>②rule.xml：定义分片规则</td>
+</tr>
+<tr>
+<td>③server.xml：定义用户以及系统相关变量，如端口等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-配置">2.  配置</h3>
+<h4 id="21-serverxml配置文件">2.1  server.xml配置文件</h4>
+<figure data-type="image" tabindex="5"><img src="https://pluto1995.github.io//post-images/1634304408059.png" alt="" loading="lazy"></figure>
+<h4 id="22-schemaxml配置文件">2.2  schema.xml配置文件</h4>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE mycat:schema SYSTEM &quot;schema.dtd&quot;&gt;
+&lt;mycat:schema xmlns:mycat=&quot;http://io.mycat/&quot;&gt; 
+        &lt;schema name=&quot;TESTDB&quot; checkSQLschema=&quot;false&quot; sqlMaxLimit=&quot;100&quot; dataNode=&quot;dn1&quot;&gt;
+        &lt;/schema&gt;
+        &lt;dataNode name=&quot;dn1&quot; dataHost=&quot;host1&quot; database=&quot;mytestdb&quot; /&gt;
+        &lt;dataHost name=&quot;host1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;0&quot;
+                  writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot;  slaveThreshold=&quot;100&quot;&gt;
+            
+                &lt;heartbeat&gt;select user()&lt;/heartbeat&gt;
+                &lt;!-- can have multi write hosts --&gt;
+                &lt;writeHost host=&quot;hostM1&quot; url=&quot;192.168.200.166:3306&quot; user=&quot;root&quot; password=&quot;root&quot;&gt;
+                        &lt;!-- can have multi read hosts --&gt;
+                        &lt;readHost host=&quot;hostS1&quot; url=&quot;192.168.200.168:3306&quot; user=&quot;root&quot; password=&quot;root&quot; /&gt;
+                &lt;/writeHost&gt;
+        &lt;/dataHost&gt;
+&lt;/mycat:schema&gt;
+</code></pre>
+<p>配置标签解读</p>
+<pre><code class="language-xml"># 这是配置schema 属性的标签  name dataNode[引用的数据节点]
+&lt;schema &gt; &lt;/schema&gt;
+# 这里配置数据节点的属性 name  dataHost[数据节点的ip地址]  database[引用的数据库]
+&lt;dataNode&gt; &lt;/dataNode&gt;
+# dataHost 数据库的host name  balance[平衡模式，配置读写 主备 主从等 0 1 2 3] 
+&lt;dataHost&gt; &lt;/dataHost&gt;
+# 心跳机制
+ &lt;heartbeat&gt; &lt;/heartbeat&gt;
+# 操作写入的 host 数据库
+&lt;writeHost&gt; 
+    # 可读取数据的 host 数据库 --从机
+    &lt;readHost&gt;&lt;/readHost&gt;
+&lt;/writeHost&gt;
+</code></pre>
+<h3 id="3-启动与登录">3. 启动与登录</h3>
+<h4 id="31-启动方式">3.1 启动方式</h4>
+<pre><code>①控制台启动 ：去mycat/bin 目录下执行 ./mycat console
+②后台启动 ：去mycat/bin 目录下 ./mycat start
+为了能第一时间看到启动日志，方便定位问题，我们选择①控制台启动。
+
+方式一：作为启动程序打印日志。
+</code></pre>
+<p>启动成功</p>
+<pre><code>启动mycat:
+./mycat console
+jvm 1    | MyCAT Server startup successfully. see logs in logs/mycat.log 表示启动成功！
+Mycat作为数据库中间件要和数据库部署在不同机器上，所以要验证远程访问情况。
+</code></pre>
+<h4 id="32-登录">3.2  登录</h4>
+<p>登录后台管理窗口</p>
+<pre><code class="language-mysql">mysql -umycat -p123456 -P 9066 -h 192.168.200.168
+# 端口 9066 
+</code></pre>
+<p>登录后台数据窗口</p>
+<pre><code class="language-MySQL">mysql -umycat -p123456 -P 8066 -h 192.168.200.168
+# 端口 8066 
+</code></pre>
+<p>区别</p>
+<pre><code>管理窗口用于管理Mycat
+后台数据窗口可以查询和操作数据
+</code></pre>
+<h2 id="五-搭建读写分离">五、搭建读写分离</h2>
+<p>一主一从 读写分离模式<br>
+<img src="https://pluto1995.github.io//post-images/1634304451965.png" alt="" loading="lazy"></p>
+<h3 id="51-搭建mysql数据库主从复制">5.1  搭建MySQL数据库主从复制</h3>
+<h4 id="511-mysql主从复制-原理">5.1.1  Mysql主从复制 原理</h4>
+<figure data-type="image" tabindex="6"><img src="file:///C:/Users/Pulto/AppData/Local/Temp/msohtmlclip1/01/clip_image002.jpg" alt="graphic" loading="lazy"></figure>
+<pre><code>	两个日志，两个线程
+主机：将数据改变写入到 二进制日志中 [Binarylog]
+从机：通过I/O 线程读取到 主机的二进制文件，写入到自己的中继日志中[RelayLog]
+		在通过SQL线程执行数据变化
+		
+需要注意的是：从机需要创建数据改变的数据库，表自动复制，但是需要手动创建数据库
+</code></pre>
+<h4 id="512-主机配置">5.1.2 主机配置</h4>
+<pre><code class="language-mysql">修改配置文件：vim /etc/my.cnf
+#主服务器唯一ID
+server-id=1
+ #启用二进制日志
+log-bin=mysql-bin
+# 设置不要复制的数据库(可设置多个)
+binlog-ignore-db=mysql
+binlog-ignore-db=information_schema
+#设置需要复制的数据库
+binlog-do-db=需要复制的主数据库名字
+#设置logbin格式
+binlog_format=STATEMENT
+</code></pre>
+<h4 id="513-binlog日志三种格式">5.1.3  binlog日志三种格式</h4>
+<pre><code>1.Statement：每一条会修改数据的sql都会记录在binlog中。
+优点：不需要记录每一行的变化，减少了binlog日志量，节约了IO，提高性能。(相比row能节约多少性能与日志量，这个取决于应用的SQL情况，正常同一条记录修改或者插入row格式所产生的日志量还小于Statement产生的日志量，但是考虑到如果带条件的update操作，以及整表删除，alter表等操作，ROW格式会产生大量日志，因此在考虑是否使用ROW格式日志时应该跟据应用的实际情况，其所产生的日志量会增加多少，以及带来的IO性能问题。)
+缺点：由于记录的只是执行语句，为了这些语句能在slave上正确运行，因此还必须记录每条语句在执行的时候的一些相关信息，以保证所有语句能在slave得到和在master端执行时候相同的结果。另外mysql 的复制,像一些特定函数功能，slave可与master上要保持一致会有很多相关问题(如sleep()函数， last_insert_id()，以及user-defined functions(udf)会出现问题).
+2.Row:不记录sql语句上下文相关信息，仅保存哪条记录被修改。
+优点： binlog中可以不记录执行的sql语句的上下文相关的信息，仅需要记录那一条记录被修改成什么了。所以rowlevel的日志内容会非常清楚的记录下每一行数据修改的细节。而且不会出现某些特定情况下的存储过程，或function，以及trigger的调用和触发无法被正确复制的问题
+缺点:所有的执行的语句当记录到日志中的时候，都将以每行记录的修改来记录，这样可能会产生大量的日志内容,比如一条update语句，修改多条记录，则binlog中每一条修改都会有记录，这样造成binlog日志量会很大，特别是当执行alter table之类的语句的时候，由于表结构修改，每条记录都发生改变，那么该表每一条记录都会记录到日志中。
+3.Mixedlevel: 是以上两种level的混合使用，一般的语句修改使用statment格式保存binlog，如一些函数，statement无法完成主从复制的操作，则采用row格式保存binlog,MySQL会根据执行的每一条具体的sql语句来区分对待记录的日志形式，也就是在Statement和Row之间选择一种.新版本的MySQL中队row level模式也被做了优化，并不是所有的修改都会以row level来记录，像遇到表结构变更的时候就会以statement模式来记录。至于update或者delete等修改数据的语句，还是会记录所有行的变更。
+</code></pre>
+<h4 id="514-从机配置">5.1.4  从机配置</h4>
+<pre><code class="language-mysql">修改配置文件：vim /etc/my.cnf
+#从服务器唯一ID
+server-id=2
+ #启用中继日志
+relay-log=mysql-relay
+
+</code></pre>
+<h4 id="515-主机-从机重启mysql服务-主机从机都关闭防火墙">5.1.5  主机、从机重启MySQL服务  [主机从机都关闭防火墙]</h4>
+<h4 id="516-在主机上建立帐户并授权slave">5.1.6  在主机上建立帐户并授权slave</h4>
+<pre><code class="language-mysql">#在主机MySQL里执行授权命令
+GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%' IDENTIFIED BY ‘123123’;
+flush privileges;
+#查询master的状态
+show master status;
+#记录下File和Position的值
+#执行完此步骤后不要再操作主服务器MySQL，防止主服务器状态值变化
+
+#  这里slave 账户 是用户从机登录 主机用来 读取二进制文件的。
+</code></pre>
+<h4 id="517-在从机上配置需要复制的主机">5.1.7   在从机上配置需要复制的主机</h4>
+<pre><code class="language-MySQL">#复制主机的命令
+CHANGE MASTER TO MASTER_HOST='192.168.6.100',
+MASTER_USER='slave',
+MASTER_PASSWORD='123123',
+MASTER_LOG_FILE='mysql-bin.000002', MASTER_LOG_POS=154;
+
+#启动从服务器复制功能
+start slave;
+#查看从服务器状态
+show slave status\G     # 这里的 \G 就代表 ; 号  表示结束，不需要加 分号
+#下面两个参数都是Yes，则说明主从配置成功！
+# Slave_IO_Running: yes   [这又BUG 看BUG 集锦 ]
+# Slave_SQL_Running: Yes
+
+ # 注意：  如果从机为克隆的主机，那么需要修改 从机的 mysql 中的uuid  定位auto.cnf文件
+ find / -iname &quot;auto.cnf&quot;
+</code></pre>
+<h4 id="518-测试_其他命令">5.1.8  测试_其他命令</h4>
+<table>
+<thead>
+<tr>
+<th>测试</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;<strong>测试</strong>&gt;  主机新建库、新建表、insert记录，从机复制</td>
+</tr>
+<tr>
+<td><strong>如何停止从服务复制功能</strong></td>
+</tr>
+<tr>
+<td>stop slave; <br />功能说明：停止I/O 线程和SQL线程的操作。</td>
+</tr>
+<tr>
+<td><strong>如何重新配置主从</strong></td>
+</tr>
+<tr>
+<td>reset slave;<br />用于删除功能说明：SLAVE数据库的relaylog日志文件，并重新启用新的relaylog文件；<br />reset master;<br />功能说明：删除所有的binglog日志文件，并将日志索引文件清空，重新开始所有新的日志文件。用于第一次进行搭建主从库时，进行主库binlog初始化工作；</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-修改mycat的配置文件schemaxml">5.2  修改Mycat的配置文件schema.xml</h3>
+<p>\1)   之前的配置已分配了读写主机，是否已实现读写分离？</p>
+<pre><code> 默认：balance=&quot;0&quot;
+</code></pre>
+<p>\2)   修改<dataHost>的balance属性，通过此属性配置读写分离的类型</p>
+<pre><code class="language-mysql">负载均衡类型，目前的取值有4 种：
+（1）balance=&quot;0&quot;, 不开启读写分离机制，所有读操作都发送到当前可用的 writeHost 上。
+（2）balance=&quot;1&quot;，全部的 readHost 与 stand by writeHost 参与 select 语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且 M1 与 M2 互为主备)，正常情况下，M2,S1,S2 都参与 select 语句的负载均衡。
+（3）balance=&quot;2&quot;，所有读操作都随机的在 writeHost、readhost 上分发。
+（4）balance=&quot;3&quot;，所有读请求随机的分发到 readhost 执行，writerHost 不负担读压力
+</code></pre>
+<p>\3)   为了能看到读写分离的效果，把balance设置成2，会在两个主机间切换查询  <strong>(2只限于测试，生产环境请选择1或3)</strong></p>
+<pre><code class="language-xml">…
+&lt;dataHost name=&quot;host1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;2&quot;
+                          writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot; slaveThreshold=&quot;100&quot;&gt;
+…
+
+</code></pre>
+<h3 id="53-重启mycat">5.3  重启Mycat</h3>
+<pre><code class="language-mysql">./mycat console
+多次执行查询语句即可看到效果
+select * from mytbl ;
+</code></pre>
+<h2 id="六-垂直拆分分库">六、  垂直拆分——分库</h2>
+<p>个人理解</p>
+<pre><code>	分库：通过操作 Mycat客户端进行数据的增删改 ，会通过配置文件 自动选择好响应的数据库操作，[配置文件中有一个逻辑视图，能够查看到所有配置的dataNode中的库、表、数据，]。
+	意义，操作一处即可操作所有配置，简化操作流程和配置文件，即配置Mycat端口就可操作其他不同端口的数据库，也是业务拆分的一种体现，减少数据库的压力。
+</code></pre>
+<h4 id="61-为什么">6.1 为什么</h4>
+<pre><code>	一个数据库由很多表的构成，每个表对应着不同的业务，垂直切分是指按照业务将表进行分类，分布到不同 的数据库上面，这样也就将数据或者说压力分担到不同的库上面，如下图：  系统被切分成了，用户，订单交易，支付几个模块。
+</code></pre>
+<figure data-type="image" tabindex="7"><img src="C:%5CUsers%5CPulto%5CDocuments%5CGridea%5Cpost-images%5C123.jpg" alt="" loading="lazy"></figure>
+<h4 id="62-如何划分">6.2  如何划分</h4>
+<p>大前提</p>
+<pre><code>在两台主机上的两个数据库中的表，不能进行关联查询。
+</code></pre>
+<p>分库原则</p>
+<pre><code>有紧密关联关系的表应该在一个库里，相互没有关联关系的表可以分到不同的库里
+</code></pre>
+<h4 id="63-实现分库">6.3  实现分库</h4>
+<h5 id="631-停止mycat停止主从修改schema配置文件">6.3.1    停止mycat，停止主从，修改schema配置文件</h5>
+<pre><code class="language-xml"># 在从机上执行 mysql&gt; stop slave;
+…
+&lt;schema name=&quot;TESTDB&quot; checkSQLschema=&quot;false&quot; sqlMaxLimit=&quot;100&quot; dataNode=&quot;dn1&quot;&gt;
+             &lt;table name=&quot;customer&quot; dataNode=&quot;dn2&quot; &gt;&lt;/table&gt;
+        &lt;/schema&gt;
+ 
+&lt;dataNode name=&quot;dn1&quot; dataHost=&quot;host1&quot; database=&quot;orders&quot; /&gt;
+&lt;dataNode name=&quot;dn2&quot; dataHost=&quot;host2&quot; database=&quot;orders&quot; /&gt;
+
+        &lt;dataHost name=&quot;host1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;0&quot;
+                          writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot;  slaveThreshold=&quot;100&quot;&gt;
+                &lt;heartbeat&gt;select user()&lt;/heartbeat&gt;
+                &lt;!-- can have multi write hosts --&gt;
+                &lt;writeHost host=&quot;hostM1&quot; url=&quot;192.168.200.166:3306&quot; user=&quot;root&quot; password=&quot;root&quot;&gt;
+                &lt;/writeHost&gt;
+        &lt;/dataHost&gt;
+        &lt;dataHost name=&quot;host2&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;0&quot;
+                          writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot;  slaveThreshold=&quot;100&quot;&gt;
+                &lt;heartbeat&gt;select user()&lt;/heartbeat&gt;
+                &lt;!-- can have multi write hosts --&gt;
+                &lt;writeHost host=&quot;hostM2&quot; url=&quot;192.168.200.168:3306&quot; user=&quot;root&quot; password=&quot;root&quot;&gt;
+                &lt;/writeHost&gt;
+        &lt;/dataHost&gt;
+…
+
+</code></pre>
+<h5 id="632-新增分库的数据库">6.3.2  新增分库的数据库</h5>
+<pre><code class="language-mysql"># 分库操作不是在原来的老数据库上进行操作，需要准备两台机器分别安装新的数据库
+
+#在数据节点dn1、dn2上分别创建数据库orders
+CREATE DATABASE orders;
+#四张表如何建立，建立在什么位置？
+order 以及其他两张表建立dn1 ,customer dn2
+
+</code></pre>
+<h4 id="64-测试">6.4  测试</h4>
+<table>
+<thead>
+<tr>
+<th>启动Mycat _ 访问Mycat进行分库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>./mycat console                     &lt;启动mycat客户端&gt;</td>
+</tr>
+<tr>
+<td>mysql -umycat -p123456 -h 192.168.200.168 -P 8066                      #访问Mycat</td>
+</tr>
+<tr>
+<td>user TESTDB;                       #切换到TESTDB</td>
+</tr>
+<tr>
+<td>#执行 分别 往不同表中灌入数据，查看数据情况</td>
+</tr>
+</tbody>
+</table>
+<h2 id="七-水平拆分分表">七、 水平拆分——分表</h2>
+<p>个人理解</p>
+<pre><code>	分表：将一个数据将要庞大的表，进行拆分，通过标志性的字段，如：user_id。这种能够定位到其他表，或者标志性的字段，来拆分到不同数据库的相同表中，[通过拆分模式，根据数据库的多少 配置好配置文件]
+</code></pre>
+<h4 id="71-是什么">7.1 是什么</h4>
+<pre><code>	相对于垂直拆分，水平拆分不是将表做分类，而是按照某个字段的某种规则来分散到多个库之中，每个表中包含一部分数据。简单来说，我们可以将数据的水平切分理解为是按照数据行的切分，就是将表中的某些行切分 到一个数据库，而另外的某些行又切分到其他的数据库中，如图： 
+</code></pre>
+<figure data-type="image" tabindex="8"><img src="C:%5CUsers%5CPulto%5CDocuments%5CGridea%5Cpost-images%5C123123.jpg" alt="" loading="lazy"></figure>
+<h4 id="72-如何分表">7.2 如何分表</h4>
+<h5 id="721-选择要拆分的表">7.2.1   选择要拆分的表</h5>
+<pre><code>	MySQL单表存储数据条数是有瓶颈的，单表达到500万条数据就达到了瓶颈，会影响查询效率，需要进行水平拆分（分表）进行优化。
+例如：例子中的orders、orders_detail都已经达到600万行数据，需要进行分表优化。
+</code></pre>
+<h5 id="722-分表字段">7.2.2   分表字段</h5>
+<pre><code>以orders表为例，可以根据不同自字段进行分表
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>分表字段</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>id,createtime  （主键、或创建时间）</td>
+<td>查询订单注重时效，历史订单被查询的次数少，如此分片会造成一个节点访问多，一个访问少，不平均。</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>customer_id</strong>**（客户id****）**</td>
+<td>根据客户id去分，两个节点访问平均，一个客户的所有订单都在同一个节点</td>
+</tr>
+</tbody>
+</table>
+<h5 id="723-停止mycat修改配置文件schemaxml">7.2.3    停止mycat修改配置文件schema.xml</h5>
+<pre><code class="language-xml">#为orders表设置数据节点为dn1、dn2，并指定分片规则为mod_rule（自定义的名字）
+&lt;table name=&quot;orders&quot; dataNode=&quot;dn1,dn2&quot;  rule=&quot;mod_rule&quot; &gt;&lt;/table&gt;
+#如下图
+</code></pre>
+<figure data-type="image" tabindex="9"><img src="https://pluto1995.github.io//post-images/1634304545967.png" alt="" loading="lazy"></figure>
+<h5 id="724-停止mycat修改配置文件rulexml">7.2.4    停止mycat修改配置文件rule.xml</h5>
+<pre><code class="language-xml">#在rule配置文件里新增分片规则mod_rule，并指定规则适用字段为customer_id， 
+#还有选择分片算法mod-long（对字段求模运算），customer_id对两个节点求模，根据结果分片
+#新增配置算法mod-long参数count为2，两个节点
+&lt;tableRule name=&quot;mod_rule&quot;&gt;
+             &lt;rule&gt;
+                        &lt;columns&gt;customer_id&lt;/columns&gt;
+                        &lt;algorithm&gt;mod-long&lt;/algorithm&gt;
+               &lt;/rule&gt;
+       &lt;/tableRule&gt;
+…
+在原有的配置中将 3---&gt;2即可！
+&lt;function name=&quot;mod-long&quot; class=&quot;io.mycat.route.function.PartitionByMod&quot;&gt;
+                &lt;!-- how many data nodes --&gt;
+                &lt;property name=&quot;count&quot;&gt;2&lt;/property&gt;
+     &lt;/function&gt;
+</code></pre>
+<h5 id="725-在数据节点dn2上建orders表">7.2.5    在数据节点dn2上建orders表</h5>
+<pre><code class="language-mysql">CREATE TABLE orders(
+    id INT AUTO_INCREMENT,
+    order_type INT,
+    customer_id INT,
+    amount DECIMAL(10,2),
+    PRIMARY KEY(id)  
+); 
+</code></pre>
+<h5 id="726-重启mycat配置生效将配置文件重新导入">7.2.6    重启Mycat配置生效，将配置文件重新导入</h5>
+<h5 id="727-访问mycat灌数据实现分片">7.2.7    访问Mycat灌数据实现分片</h5>
+<pre><code class="language-mysql">#在mycat里向orders表插入数据，INSERT时字段不能省略
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES (1,101,100,100100);
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES(2,101,100,100300);
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES(3,101,101,120000);
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES(4,101,101,103000);
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES(5,102,101,100400);
+INSERT INTO orders(id,order_type,customer_id,amount) VALUES(6,102,100,100020);
+#在mycat、dn1、dn2中查看orders表数据，分表成功
+</code></pre>
+<h4 id="73-mycat-的分片join">7.3   Mycat 的分片“join”</h4>
+<pre><code>	Orders订单表已经进行分表操作了，和它关联的orders_detail订单详情表如何进行join查询。
+我们要对orders_detail也要进行分片操作。Join的原理如下图：
+</code></pre>
+<figure data-type="image" tabindex="10"><img src="https://pluto1995.github.io//post-images/1634304567728.png" alt="" loading="lazy"></figure>
+<h5 id="731-e-r表">7.3.1    E-R表</h5>
+<pre><code>子表的记录与所关联的父表记录存放在同一个数据分片上
+</code></pre>
+<pre><code class="language-mysql">#修改schema.xml配置文件
+…
+&lt;table name=&quot;orders&quot; dataNode=&quot;dn1,dn2&quot;  rule=&quot;mod_rule&quot; &gt;
+    &lt;childTable name=&quot;orders_detail&quot; primaryKey=&quot;id&quot; joinKey=&quot;order_id&quot; parentKey=&quot;id&quot; /&gt;
+&lt;/table&gt;
+…
+#在dn2创建orders_detail表
+CREATE TABLE orders_detail(
+    id INT AUTO_INCREMENT,
+    detail VARCHAR(2000),
+    order_id INT,
+    PRIMARY KEY(id)
+);
+
+#导入配置文件，重启Mycat
+#访问Mycat向orders_detail表插入数据
+INSERT INTO orders_detail(id,detail,order_id) VALUES(1,'detail1',1);
+INSERT INTO orders_detail(id,detail,order_id) VALUES(2,'detail1',2);
+INSERT INTO orders_detail(id,detail,order_id) VALUES(3,'detail1',3);
+INSERT INTO orders_detail(id,detail,order_id) VALUES(4,'detail1',4);
+INSERT INTO orders_detail(id,detail,order_id) VALUES(5,'detail1',5);
+INSERT INTO orders_detail(id,detail,order_id) VALUES(6,'detail1',6);
+#在mycat、dn1、dn2中运行两个表join语句
+select o.*,od.detail from orders o inner join orders_detail od on o.id=od.order_id;
+ 
+</code></pre>
+<h5 id="731-全局表">7.3.1    全局表</h5>
+<p>在分片的情况下，当业务表因为规模而进行分片以后，业务表与这些附属的字典表之间的关联，就成了比较棘手的问题，考虑到字典表具有以下几个特性：</p>
+<table>
+<thead>
+<tr>
+<th>\1.  变动不频繁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\2.  数据量总体变化不大</td>
+</tr>
+<tr>
+<td>\3.  数据规模不大，很少有超过数十万条记录   <br />鉴于此，Mycat 定义了一种特殊的表，称之为“全局表”，全局表具有以下特性：</td>
+</tr>
+<tr>
+<td>\4.  全局表的插入、更新操作会实时在所有节点上执行，保持各个分片的数据一致性</td>
+</tr>
+<tr>
+<td>\5.  全局表的查询操作，只从一个节点获取\4.  全局表的插入、更新操作会实时在所有节点上执行，保持各个分片的数据一致性</td>
+</tr>
+<tr>
+<td>\6.  全局表可以跟任何一个表进行 JOIN 操作</td>
+</tr>
+</tbody>
+</table>
+<pre><code>	将字典表或者符合字典表特性的一些表定义为全局表，则从另外一个方面，很好的解决了数据 JOIN 的难题。通过全局表+基于 E-R 关系的分片策略，Mycat 可以满足 80%以上的企业应用开发!
+</code></pre>
+<pre><code class="language-mysql">#修改schema.xml配置文件
+…
+&lt;table name=&quot;orders&quot; dataNode=&quot;dn1,dn2&quot;  rule=&quot;mod_rule&quot; &gt;
+    &lt;childTable name=&quot;orders_detail&quot; primaryKey=&quot;id&quot; joinKey=&quot;order_id&quot; parentKey=&quot;id&quot; /&gt;
+&lt;/table&gt;
+&lt;table name=&quot;dict_order_type&quot; dataNode=&quot;dn1,dn2&quot; type=&quot;global&quot; &gt;&lt;/table&gt;
+…
+ 
+#在dn2创建dict_order_type表
+CREATE TABLE dict_order_type(
+    id INT AUTO_INCREMENT,
+    order_type VARCHAR(200),
+    PRIMARY KEY(id)
+);
+#导入配置文件，重启Mycat
+#访问Mycat向dict_order_type表插入数据
+INSERT INTO dict_order_type(id,order_type) VALUES(101,'type1');
+INSERT INTO dict_order_type(id,order_type) VALUES(102,'type2');
+#在Mycat、dn1、dn2中查询表数据
+
+</code></pre>
+<h4 id="74-全局序列">7.4  全局序列</h4>
+<pre><code>	在实现分库分表的情况下，数据库自增主键已无法保证自增主键的全局唯一。
+为此，Mycat 提供了全局 sequence，并且提供了包含本地配置和数据库配置等多种实现方式
+</code></pre>
+<h5 id="741-本地文件">7.4.1   本地文件</h5>
+<pre><code>	此方式 Mycat 将 sequence 配置到文件中，当使用到 sequence 中的配置后，Mycat 会更下 
+classpath 中的 sequence_conf.properties 文件中 sequence 当前的值。
+
+	/usr/local/mycat/conf/sequence_conf.properties
+
+	优点：本地加载，读取速度较快
+	缺点：抗风险能力差，Mycat所在主机宕机后，无法读取本地文件。
+
+</code></pre>
+<h5 id="742-时间戳方式">7.4.2   时间戳方式</h5>
+<pre><code>	全局序列ID=  64 位二进制  (42(毫秒)+5(机器 ID)+5(业务编码)+12(重复累加) 换算成十进制为 18 位数的 long 类型，每毫秒可以并发 12 位二进制的累加。
+	
+	优点：配置简单
+	缺点：18位ID过长
+</code></pre>
+<figure data-type="image" tabindex="11"><img src="C:%5CUsers%5CPulto%5CDocuments%5CGridea%5Cpost-images%5Cimage-20211015211925412.png" alt="image-20211015211925412" loading="lazy"></figure>
+<h5 id="743-自主生成全局序列">7.4.3   自主生成全局序列</h5>
+<pre><code>可在java项目里自己生成全局序列，如下： 
+	根据业务逻辑组合
+	可以利用 redis的单线程原子性 incr来生成序列
+但，自主生成需要单独在工程中用java代码实现，增加了分布式项目的复杂性
+</code></pre>
+<h5 id="743-数据库方式">7.4.3   数据库方式★</h5>
+<p><strong>1.</strong> <strong>建库序列脚本</strong></p>
+<pre><code class="language-mysql">#在dn1主机上创建全局序列表
+CREATE TABLE MYCAT_SEQUENCE (
+NAME VARCHAR(50) NOT NULL,
+current_value INT NOT NULL,
+increment INT NOT NULL DEFAULT 100, 
+PRIMARY KEY(NAME)) 
+ENGINE=INNODB;
+# 查询数据
+SELECT * FROM MYCAT_SEQUENCE;
+#清空数据
+TRUNCATE TABLE MYCAT_SEQUENCE;
+# truncate : 表示直接情况所有数据，不留任何痕迹！使用回滚无效！
+#创建全局序列所需函数：官方提供
+DELIMITER $$ 
+CREATE FUNCTION mycat_seq_currval(seq_name VARCHAR(50)) RETURNS VARCHAR(64)
+DETERMINISTIC  
+BEGIN
+DECLARE retval VARCHAR(64);
+SET retval=&quot;-999999999,null&quot;;
+SELECT CONCAT(CAST(current_value AS CHAR),&quot;,&quot;,CAST(increment AS CHAR)) INTO retval FROM
+MYCAT_SEQUENCE WHERE NAME = seq_name;
+RETURN retval;
+END $$
+ DELIMITER $$
+CREATE FUNCTION mycat_seq_setval(seq_name VARCHAR(50),VALUE INTEGER) RETURNS VARCHAR(64)
+DETERMINISTIC
+BEGIN
+UPDATE MYCAT_SEQUENCE
+SET current_value = VALUE
+WHERE NAME = seq_name;
+RETURN mycat_seq_currval(seq_name);
+END $$
+ 
+DELIMITER $$
+CREATE FUNCTION mycat_seq_nextval(seq_name VARCHAR(50)) RETURNS VARCHAR(64) 
+DETERMINISTIC
+BEGIN
+UPDATE MYCAT_SEQUENCE
+SET current_value = current_value + increment WHERE NAME = seq_name;
+RETURN mycat_seq_currval(seq_name);
+END $$
+
+#初始化序列表记录
+INSERT INTO MYCAT_SEQUENCE(NAME,current_value,increment) VALUES ('ORDERS', 400000,100);
+ 
+</code></pre>
+<p><strong>2.</strong>  <strong>修改Mycat配置</strong></p>
+<pre><code class="language-shell">#修改sequence_db_conf.properties 
+vim sequence_db_conf.properties
+#意思是 ORDERS这个序列在dn1这个节点上，具体dn1节点是哪台机子，请参考schema.xml
+ 
+#修改server.xml
+vim server.xml
+16行#全局序列类型：0-本地文件，1-数据库方式，2-时间戳方式。此处应该修改成1。
+
+#重启Mycat 
+
+</code></pre>
+<figure data-type="image" tabindex="12"><img src="C:%5CUsers%5CPulto%5CDocuments%5CGridea%5Cpost-images%5Cimage-20211015212125285.png" alt="image-20211015212125285" loading="lazy"></figure>
+<p><strong>3.</strong>  <strong>验证全局序列</strong></p>
+<pre><code class="language-mysql">#登录Mycat，插入数据
+insert into orders(id,amount,customer_id,order_type) 
+values(next value for MYCATSEQ_ORDERS,1000,101,102);
+#查询数据
+ select * from orders;
+ 
+#重启Mycat后，再次插入数据，再查询(模拟Mycat备机上线)
+ inser into orders values (xxx,xxx)
+ 
+# 总结： 
+
+</code></pre>
+<p><strong>总结</strong></p>
+<table>
+<thead>
+<tr>
+<th>总结</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ø 利用数据库一个表来进行计数累加。但是并不是每次生成序列都读写数据库，这样效率太低。</td>
+</tr>
+<tr>
+<td>Ø Mycat会<strong>预加载一部分号段</strong>到Mycat的内存中，这样大部分读写序列都是在内存中完成的。</td>
+</tr>
+<tr>
+<td>Ø 如果内存中的号段用完了 Mycat会再向数据库要一次。</td>
+</tr>
+<tr>
+<td>Ø 问：如果Mycat崩溃了 ，内存中的序列岂不是都没了？</td>
+</tr>
+<tr>
+<td>Ø 是的。如果是这样，那么Mycat启动后会向数据库申请新的号段，原有号段会弃用。</td>
+</tr>
+<tr>
+<td>Ø 也就是说如果Mycat重启，那么损失是当前的号段没用完的号码，但是不会因此出现主键重复。</td>
+</tr>
+</tbody>
+</table>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#mycat_%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%97%B4%E4%BB%B6">MyCat_数据库中间件</a>
+<ul>
+<li><a href="#%E4%B8%80-%E6%98%AF%E4%BB%80%E4%B9%88">一、是什么</a>
+<ul>
+<li><a href="#1-mycat%E7%9A%84%E7%94%B1%E6%9D%A5">1.  MyCat的由来</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E5%B9%B2%E4%BB%80%E4%B9%88">二、 干什么</a>
+<ul>
+<li><a href="#11-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB">1.1  读写分离</a></li>
+<li><a href="#12-%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87">1.2  数据分片</a></li>
+<li><a href="#13-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E6%95%B4%E5%90%88">1.3  多数据源整合</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E4%BD%9C%E7%94%A8%E5%8E%9F%E7%90%86">三、 作用原理</a></li>
+<li><a href="#%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93"><strong>个人总结</strong></a></li>
+<li><a href="#%E5%9B%9B-%E5%AE%89%E8%A3%85%E5%90%AF%E5%8A%A8">四、 安装启动</a>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85">1.  安装</a>
+<ul>
+<li><a href="#11-%E8%A7%A3%E5%8E%8B-tar-%E6%96%87%E4%BB%B6%E5%8D%B3%E5%8F%AF%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8">1.1  解压 tar 文件即可安装使用</a></li>
+<li><a href="#12-%E4%B8%89%E4%B8%AA%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">1.2  三个配置文件</a></li>
+</ul>
+</li>
+<li><a href="#2-%E9%85%8D%E7%BD%AE">2.  配置</a>
+<ul>
+<li><a href="#21-serverxml%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">2.1  server.xml配置文件</a></li>
+<li><a href="#22-schemaxml%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">2.2  schema.xml配置文件</a></li>
+</ul>
+</li>
+<li><a href="#3-%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%99%BB%E5%BD%95">3. 启动与登录</a>
+<ul>
+<li><a href="#31-%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F">3.1 启动方式</a></li>
+<li><a href="#32-%E7%99%BB%E5%BD%95">3.2  登录</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%94-%E6%90%AD%E5%BB%BA%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB">五、搭建读写分离</a>
+<ul>
+<li><a href="#51-%E6%90%AD%E5%BB%BAmysql%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6">5.1  搭建MySQL数据库主从复制</a>
+<ul>
+<li><a href="#511-mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-%E5%8E%9F%E7%90%86">5.1.1  Mysql主从复制 原理</a></li>
+<li><a href="#512-%E4%B8%BB%E6%9C%BA%E9%85%8D%E7%BD%AE">5.1.2 主机配置</a></li>
+<li><a href="#513-binlog%E6%97%A5%E5%BF%97%E4%B8%89%E7%A7%8D%E6%A0%BC%E5%BC%8F">5.1.3  binlog日志三种格式</a></li>
+<li><a href="#514-%E4%BB%8E%E6%9C%BA%E9%85%8D%E7%BD%AE">5.1.4  从机配置</a></li>
+<li><a href="#515-%E4%B8%BB%E6%9C%BA-%E4%BB%8E%E6%9C%BA%E9%87%8D%E5%90%AFmysql%E6%9C%8D%E5%8A%A1-%E4%B8%BB%E6%9C%BA%E4%BB%8E%E6%9C%BA%E9%83%BD%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99">5.1.5  主机、从机重启MySQL服务  [主机从机都关闭防火墙]</a></li>
+<li><a href="#516-%E5%9C%A8%E4%B8%BB%E6%9C%BA%E4%B8%8A%E5%BB%BA%E7%AB%8B%E5%B8%90%E6%88%B7%E5%B9%B6%E6%8E%88%E6%9D%83slave">5.1.6  在主机上建立帐户并授权slave</a></li>
+<li><a href="#517-%E5%9C%A8%E4%BB%8E%E6%9C%BA%E4%B8%8A%E9%85%8D%E7%BD%AE%E9%9C%80%E8%A6%81%E5%A4%8D%E5%88%B6%E7%9A%84%E4%B8%BB%E6%9C%BA">5.1.7   在从机上配置需要复制的主机</a></li>
+<li><a href="#518-%E6%B5%8B%E8%AF%95_%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4">5.1.8  测试_其他命令</a></li>
+</ul>
+</li>
+<li><a href="#52-%E4%BF%AE%E6%94%B9mycat%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6schemaxml">5.2  修改Mycat的配置文件schema.xml</a></li>
+<li><a href="#53-%E9%87%8D%E5%90%AFmycat">5.3  重启Mycat</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%AD-%E5%9E%82%E7%9B%B4%E6%8B%86%E5%88%86%E5%88%86%E5%BA%93">六、  垂直拆分——分库</a><br>
+*
+<ul>
+<li><a href="#61-%E4%B8%BA%E4%BB%80%E4%B9%88">6.1 为什么</a></li>
+<li><a href="#62-%E5%A6%82%E4%BD%95%E5%88%92%E5%88%86">6.2  如何划分</a></li>
+<li><a href="#63-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%BA%93">6.3  实现分库</a>
+<ul>
+<li><a href="#631-%E5%81%9C%E6%AD%A2mycat%E5%81%9C%E6%AD%A2%E4%B8%BB%E4%BB%8E%E4%BF%AE%E6%94%B9schema%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">6.3.1    停止mycat，停止主从，修改schema配置文件</a></li>
+<li><a href="#632-%E6%96%B0%E5%A2%9E%E5%88%86%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93">6.3.2  新增分库的数据库</a></li>
+</ul>
+</li>
+<li><a href="#64-%E6%B5%8B%E8%AF%95">6.4  测试</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%83-%E6%B0%B4%E5%B9%B3%E6%8B%86%E5%88%86%E5%88%86%E8%A1%A8">七、 水平拆分——分表</a><br>
+*
+<ul>
+<li><a href="#71-%E6%98%AF%E4%BB%80%E4%B9%88">7.1 是什么</a></li>
+<li><a href="#72-%E5%A6%82%E4%BD%95%E5%88%86%E8%A1%A8">7.2 如何分表</a>
+<ul>
+<li><a href="#721-%E9%80%89%E6%8B%A9%E8%A6%81%E6%8B%86%E5%88%86%E7%9A%84%E8%A1%A8">7.2.1   选择要拆分的表</a></li>
+<li><a href="#722-%E5%88%86%E8%A1%A8%E5%AD%97%E6%AE%B5">7.2.2   分表字段</a></li>
+<li><a href="#723-%E5%81%9C%E6%AD%A2mycat%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6schemaxml">7.2.3    停止mycat修改配置文件schema.xml</a></li>
+<li><a href="#724-%E5%81%9C%E6%AD%A2mycat%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6rulexml">7.2.4    停止mycat修改配置文件rule.xml</a></li>
+<li><a href="#725-%E5%9C%A8%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9dn2%E4%B8%8A%E5%BB%BAorders%E8%A1%A8">7.2.5    在数据节点dn2上建orders表</a></li>
+<li><a href="#726-%E9%87%8D%E5%90%AFmycat%E9%85%8D%E7%BD%AE%E7%94%9F%E6%95%88%E5%B0%86%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%87%8D%E6%96%B0%E5%AF%BC%E5%85%A5">7.2.6    重启Mycat配置生效，将配置文件重新导入</a></li>
+<li><a href="#727-%E8%AE%BF%E9%97%AEmycat%E7%81%8C%E6%95%B0%E6%8D%AE%E5%AE%9E%E7%8E%B0%E5%88%86%E7%89%87">7.2.7    访问Mycat灌数据实现分片</a></li>
+</ul>
+</li>
+<li><a href="#73-mycat-%E7%9A%84%E5%88%86%E7%89%87join">7.3   Mycat 的分片“join”</a>
+<ul>
+<li><a href="#731-e-r%E8%A1%A8">7.3.1    E-R表</a></li>
+<li><a href="#731-%E5%85%A8%E5%B1%80%E8%A1%A8">7.3.1    全局表</a></li>
+</ul>
+</li>
+<li><a href="#74-%E5%85%A8%E5%B1%80%E5%BA%8F%E5%88%97">7.4  全局序列</a>
+<ul>
+<li><a href="#741-%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6">7.4.1   本地文件</a></li>
+<li><a href="#742-%E6%97%B6%E9%97%B4%E6%88%B3%E6%96%B9%E5%BC%8F">7.4.2   时间戳方式</a></li>
+<li><a href="#743-%E8%87%AA%E4%B8%BB%E7%94%9F%E6%88%90%E5%85%A8%E5%B1%80%E5%BA%8F%E5%88%97">7.4.3   自主生成全局序列</a></li>
+<li><a href="#743-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%96%B9%E5%BC%8F">7.4.3   数据库方式★</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://pluto1995.github.io/java-shu-ju-jie-gou-jian-dan-liao-jie-dai-wan-shan/">
+              <h3 class="post-title">
+                Java数据结构 [简单了解，待完善]
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://pluto1995.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
