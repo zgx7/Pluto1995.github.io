@@ -3,10 +3,10 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MySql架构_索引优化 | 清风拂杨柳丶</title>
-<link rel="shortcut icon" href="http://pluto1995.github.io//favicon.ico?v=1635264683764">
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1635264796461">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
-<link rel="stylesheet" href="http://pluto1995.github.io//styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="MySql架构_索引优化 | 清风拂杨柳丶 - Atom Feed" href="http://pluto1995.github.io//atom.xml">
+<link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="MySql架构_索引优化 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
@@ -36,8 +36,8 @@
     <div class="main">
       <div class="main-content">
         <div class="site-header">
-  <a href="http://pluto1995.github.io/">
-  <img class="avatar" src="http://pluto1995.github.io//images/avatar.png?v=1635264683764" alt="">
+  <a href="https://pluto1995.github.io/">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1635264796461" alt="">
   </a>
   <h1 class="site-title">
     清风拂杨柳丶
@@ -100,7 +100,7 @@
                 24 min read
               </span>
               
-                <a href="http://pluto1995.github.io/kXtIZgjT8/" class="post-tag">
+                <a href="https://pluto1995.github.io/kXtIZgjT8/" class="post-tag">
                   # mysql
                 </a>
               
@@ -143,13 +143,13 @@
 <pre><code>[FROM] [NO] [WHERE] [GROUP BY] [HAVING] [SELECT] [DISTINCT] [ORDER BY] [LIMIT]
 </code></pre>
 <p>总结： 鱼骨图<br>
-<img src="http://pluto1995.github.io//post-images/1634197069523.png" alt="" loading="lazy"></p>
+<img src="https://pluto1995.github.io//post-images/1634197069523.png" alt="" loading="lazy"></p>
 <h4 id="拓展关于group-by的理解">拓展：关于Group By的理解？</h4>
 <pre><code>	group by field：进行同名字段组合，其他字段如果存在多个，如果除分组字段外的其他字段中，有多个值，则只能通过聚合函数来查询，不然就报错，因为同一个字段不能查询到两个值。
 	group by field，filed：联合字段，将多个字段看作一个整体，整体一致才会合并。
 </code></pre>
 <h4 id="12-join-图-_7种实例实现">1.2 Join 图  _7种实例实现</h4>
-<figure data-type="image" tabindex="1"><img src="http://pluto1995.github.io//post-images/1634197089653.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="1"><img src="https://pluto1995.github.io//post-images/1634197089653.png" alt="" loading="lazy"></figure>
 <h5 id="121-创建sql-表">1.2.1 创建SQL 表</h5>
 <pre><code class="language-sql">CREATE TABLE `t_dept` (
  `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -353,7 +353,7 @@ INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(10,'韦小宝',18,NULL,100010
 索引的本质：索引是数据结构。你可以简单理解为“排好序的快速查找数据结构”。
 </code></pre>
 <h3 id="1-详解">1. 详解</h3>
-<figure data-type="image" tabindex="2"><img src="http://pluto1995.github.io//post-images/1634197688072.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://pluto1995.github.io//post-images/1634197688072.png" alt="" loading="lazy"></figure>
 <table>
 <thead>
 <tr>
@@ -438,7 +438,7 @@ INSERT INTO t_emp(id,NAME,age,deptId,empno) VALUES(10,'韦小宝',18,NULL,100010
 </tr>
 </tbody>
 </table>
-<figure data-type="image" tabindex="3"><img src="http://pluto1995.github.io//post-images/1634197161041.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://pluto1995.github.io//post-images/1634197161041.png" alt="" loading="lazy"></figure>
 <p>聚簇索引的好处</p>
 <pre><code>•	按照聚簇索引排列顺序，查询显示一定范围数据的时候，由于数据都是紧密相连，数据库不用从多个数据块中提取数据，所以节省了大量的io操作。
 </code></pre>
@@ -640,7 +640,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 <p>怎么玩</p>
 <pre><code>Explain + SQL 语句；
 </code></pre>
-<figure data-type="image" tabindex="4"><img src="http://pluto1995.github.io//post-images/1634197241207.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="4"><img src="https://pluto1995.github.io//post-images/1634197241207.png" alt="" loading="lazy"></figure>
 <p><strong>EXPLAIN****输出项（来源于mysql5.7文档）</strong></p>
 <table>
 <thead>
@@ -734,7 +734,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 </table>
 </li>
 </ol>
-<figure data-type="image" tabindex="5"><img src="http://pluto1995.github.io//post-images/1634197259401.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://pluto1995.github.io//post-images/1634197259401.png" alt="" loading="lazy"></figure>
 <table>
 <thead>
 <tr>
@@ -747,7 +747,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 </tr>
 </tbody>
 </table>
-<figure data-type="image" tabindex="6"><img src="http://pluto1995.github.io//post-images/1634197277753.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="6"><img src="https://pluto1995.github.io//post-images/1634197277753.png" alt="" loading="lazy"></figure>
 <ol>
 <li>
 <p>总结</p>
@@ -773,7 +773,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 </ol>
 <h5 id="2-select_type">②    select_type</h5>
 <p>a. 有哪些<br>
-<img src="http://pluto1995.github.io//post-images/1634197290013.png" alt="" loading="lazy"></p>
+<img src="https://pluto1995.github.io//post-images/1634197290013.png" alt="" loading="lazy"></p>
 <p>b.  查询的类型，主要是用于区别 普通查询、联合查询、子查询等的复杂查询</p>
 <table>
 <thead>
@@ -810,7 +810,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 •	https://dev.mysql.com/doc/refman/5.7/en/alter-table-partition-operations.html
 </code></pre>
 <h5 id="5-type">⑤  type★</h5>
-<figure data-type="image" tabindex="7"><img src="http://pluto1995.github.io//post-images/1634197304202.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="7"><img src="https://pluto1995.github.io//post-images/1634197304202.png" alt="" loading="lazy"></figure>
 <table>
 <thead>
 <tr>
@@ -885,7 +885,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 	值越大越好。
 </code></pre>
 <p>如何计算<br>
-<img src="http://pluto1995.github.io//post-images/1634197347168.png" alt="" loading="lazy"></p>
+<img src="https://pluto1995.github.io//post-images/1634197347168.png" alt="" loading="lazy"></p>
 <h5 id="9-ref">⑨   ref</h5>
 <pre><code>显示将哪些列或常量与键列中命名的索引进行比较，以从表中选择行。
 </code></pre>
@@ -1017,7 +1017,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="http://pluto1995.github.io/guan-yu-group-by-de-li-jie/">
+            <a href="https://pluto1995.github.io/guan-yu-group-by-de-li-jie/">
               <h3 class="post-title">
                 关于Group By的理解
               </h3>
@@ -1029,7 +1029,7 @@ ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list)
 
         <div class="site-footer">
   Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="http://pluto1995.github.io//atom.xml" target="_blank">
+  <a class="rss" href="https://pluto1995.github.io//atom.xml" target="_blank">
     <i class="ri-rss-line"></i> RSS
   </a>
 </div>
