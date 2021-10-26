@@ -2,14 +2,21 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://pluto1995.github.io/</id>
     <title>清风拂杨柳丶</title>
-    <updated>2021-10-17T12:07:40.853Z</updated>
+    <updated>2021-10-26T15:57:46.826Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://pluto1995.github.io/"/>
     <link rel="self" href="https://pluto1995.github.io/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
+    <subtitle>只写感悟，想法，思考。</subtitle>
     <logo>https://pluto1995.github.io/images/avatar.png</logo>
     <icon>https://pluto1995.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 清风拂杨柳丶</rights>
+    <entry>
+        <title type="html"><![CDATA[Java电商项目]]></title>
+        <id>https://pluto1995.github.io/java-dian-shang-xiang-mu/</id>
+        <link href="https://pluto1995.github.io/java-dian-shang-xiang-mu/">
+        </link>
+        <updated>2021-10-26T15:55:56.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[MyCat_数据库中间件]]></title>
         <id>https://pluto1995.github.io/mycat_-shu-ju-ku-zhong-jian-jian/</id>

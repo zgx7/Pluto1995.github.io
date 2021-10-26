@@ -1,0 +1,305 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java电商项目 | 清风拂杨柳丶</title>
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1635263864294">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java电商项目 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="GMall
+Day01   开发环境简介
+电商环境安装
+Linux：
+	Java docker
+docker：
+	mysql  redis  mongodb  rabbitmq  nacos  elasticsearch  zipkin  ..." />
+    <meta name="keywords" content="Java电商项目" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://pluto1995.github.io/">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1635263864294" alt="">
+  </a>
+  <h1 class="site-title">
+    清风拂杨柳丶
+  </h1>
+  <p class="site-description">
+    只写感悟，想法，思考。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java电商项目
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-10-26
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+                <a href="https://pluto1995.github.io/7-56mktRT/" class="post-tag">
+                  # Java电商项目
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="gmall">GMall</h1>
+<h2 id="day01-开发环境简介">Day01   开发环境简介</h2>
+<h3 id="电商环境安装">电商环境安装</h3>
+<pre><code>Linux：
+	Java docker
+docker：
+	mysql  redis  mongodb  rabbitmq  nacos  elasticsearch  zipkin  minio  logstash  
+</code></pre>
+<h3 id="电商业务介绍">电商业务介绍</h3>
+<pre><code>电商的主要模式：
+	B2B	C2C  B2C  C2B  O2O  B2B2C  
+核心技术：
+	SpringBoot  SpringCloud[GateWay  Nacos  Sentinel  Task  Feign]   MybatisPlus  Redis  Redisson  RabbitMQ  ElasticSearch+Kibana+Logstash    ThreadPoolExecutor ...
+	
+配置Host
+	
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://pluto1995.github.io//post-images/1635263802550.png" alt="" loading="lazy"></figure>
+<h3 id="平台属性">平台属性</h3>
+<pre><code>分类：
+	一级  二级  三级 
+数据库结构：
+	两种：  ①三张表 建立主外键关系  ②一张表  参考字典表
+平台属性：
+	平台属性和平台属性值主要用于商品的检索，每个分类对应的属性都不同，分类包含一级分类、二级分类和三级分类，分类层级区分对应分类。
+[平台属性方便查询，平台属性值，用户商品展示。]
+
+销售属性与销售属性值
+	如：商品规格，商品价格  参数问题
+
+SPU与SKU
+	每种产品均对应有唯一的SKU号。也就是说每一个商品详情展示都是一个sku。
+	SPU 是将SKU分组的总包，类似索引，表示某一类，具有相同特征的。如：SPU_Image 表示图片组，SKU表示具体到某一个图片
+</code></pre>
+<h3 id="idea开发环境">IDEA开发环境</h3>
+<pre><code>微服务：
+common[common_util  service_util]  model  service[各种启动服务]  ...
+</code></pre>
+<h2 id="day2-项目开发">Day2  项目开发</h2>
+<h3 id="service-product-实际开发">service-product 实际开发</h3>
+<pre><code>关于 数据查询 
+	一级查询  二级查询  三级查询
+	平台属性查询  平台属性值查询
+	平台属性的增删改
+</code></pre>
+<h4 id="获取一级分类数据">获取一级分类数据</h4>
+<pre><code>获取所有一级分类数据  List  query == null 即可
+</code></pre>
+<h4 id="根据一级分类数据id-获取二级分类数据">根据一级分类数据ID  获取二级分类数据</h4>
+<pre><code>根据一级分类数据ID  获取二级分类数据   返回 List query.eq 
+
+相当于一个外键的关联查询，但是 实际上 传参就是 一级分类数据的ID 所以还是单表查询  没啥
+</code></pre>
+<h4 id="根据二级分类数据id-获取三级分类数据">根据二级分类数据ID  获取三级分类数据</h4>
+<pre><code>根据二级分类数据ID  获取三级分类数据   返回 List query.eq 
+
+同上
+</code></pre>
+<h4 id="根据分类id-获取平台属性集合">根据分类Id 获取平台属性集合</h4>
+<pre><code>也是传参 查询  获取平台属性的时候，因为平台属性中包含一个 不在表结构的List 平台属性值 的集合，所以有两种方式可以解决
+
+方式一：
+	通过service层 调用  baseArrtValueMapper 中 根据 arrtInfoId 这个值查询 value 即可获取一个List  在赋值给 paramList
+方式二：
+	通过 Mapper.xml 聚合函数相对应的 sql语句  collection  ofType auto自动映射封装属性即可 
+[这里要用到 动态sql  where if test 的使用 多看看 练练即可]
+</code></pre>
+<h4 id="保存-修改平台属性">保存-修改平台属性</h4>
+<pre><code>这里传递出来一个思想：
+	就是更新数据 可以多次操作 统一一次提交 修改[这样就将上一次修改的数据完全删除，然后在新增出来保存提交的数据即可，可能会造成新旧数据一致，但是却将旧数据进行逻辑删除了，优点浪费空间，但是简化了操作，不需要一个个判断是什么操作，增删改]
+	一个需要注意的点是：在进行重新对 value 表进行新增时，需要对 value数据中的 attrId进行手动赋值，给出关联关系，不然新增成功，没法查询到。
+</code></pre>
+<h3 id="gatewayservice">GateWayService</h3>
+<pre><code>网关的操作：
+	注意配置文件  即 application.yml 中 【路由 断言 过滤】的配置	
+</code></pre>
+<h3 id="cors-跨域问题">Cors 跨域问题</h3>
+<pre><code class="language-java">原理：
+	要求ajax 请求必须在同IP 同端口 同协议下进行，不然就会产生跨域问题
+    
+解决方案：
+	方案一： Controller 添加 @CrossOrigin 注解，但是只有是牵扯到跨域问题 就需要单独添加这个注解，那么 有没有一劳永逸的方法呢？ 那就是方案二！
+	方案二：在网关服务添加 跨域的配置类 CorsConfig， 核心是给Spring容器中添加一个bean对象CorsWebFilter，通过配置这个对象，实现 跨域访问 方法访问 请求头 携带cookie 等属性的配置
+	 @Bean
+    public CorsWebFilter corsWebFilter() {
+
+        // 配置cors 跨域配置对象
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin(&quot;*&quot;);
+        configuration.addAllowedMethod(&quot;*&quot;);
+        configuration.addAllowedHeader(&quot;*&quot;);
+        configuration.setAllowCredentials(true);
+
+
+        // 配置源对象
+        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+        configurationSource.registerCorsConfiguration(&quot;/**&quot;, configuration);
+
+        // cors 过滤对象
+        return new CorsWebFilter(configurationSource);
+    }
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#gmall">GMall</a>
+<ul>
+<li><a href="#day01-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E7%AE%80%E4%BB%8B">Day01   开发环境简介</a>
+<ul>
+<li><a href="#%E7%94%B5%E5%95%86%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85">电商环境安装</a></li>
+<li><a href="#%E7%94%B5%E5%95%86%E4%B8%9A%E5%8A%A1%E4%BB%8B%E7%BB%8D">电商业务介绍</a></li>
+<li><a href="#%E5%B9%B3%E5%8F%B0%E5%B1%9E%E6%80%A7">平台属性</a></li>
+<li><a href="#idea%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83">IDEA开发环境</a></li>
+</ul>
+</li>
+<li><a href="#day2-%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91">Day2  项目开发</a>
+<ul>
+<li><a href="#service-product-%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91">service-product 实际开发</a>
+<ul>
+<li><a href="#%E8%8E%B7%E5%8F%96%E4%B8%80%E7%BA%A7%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE">获取一级分类数据</a></li>
+<li><a href="#%E6%A0%B9%E6%8D%AE%E4%B8%80%E7%BA%A7%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AEid-%E8%8E%B7%E5%8F%96%E4%BA%8C%E7%BA%A7%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE">根据一级分类数据ID  获取二级分类数据</a></li>
+<li><a href="#%E6%A0%B9%E6%8D%AE%E4%BA%8C%E7%BA%A7%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AEid-%E8%8E%B7%E5%8F%96%E4%B8%89%E7%BA%A7%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE">根据二级分类数据ID  获取三级分类数据</a></li>
+<li><a href="#%E6%A0%B9%E6%8D%AE%E5%88%86%E7%B1%BBid-%E8%8E%B7%E5%8F%96%E5%B9%B3%E5%8F%B0%E5%B1%9E%E6%80%A7%E9%9B%86%E5%90%88">根据分类Id 获取平台属性集合</a></li>
+<li><a href="#%E4%BF%9D%E5%AD%98-%E4%BF%AE%E6%94%B9%E5%B9%B3%E5%8F%B0%E5%B1%9E%E6%80%A7">保存-修改平台属性</a></li>
+</ul>
+</li>
+<li><a href="#gatewayservice">GateWayService</a></li>
+<li><a href="#cors-%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98">Cors 跨域问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://pluto1995.github.io/mycat_-shu-ju-ku-zhong-jian-jian/">
+              <h3 class="post-title">
+                MyCat_数据库中间件
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://pluto1995.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
