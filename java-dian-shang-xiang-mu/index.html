@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Java电商项目 | 清风拂杨柳丶</title>
-<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1635264967875">
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1635340948676">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="Java电商项目 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
@@ -27,7 +27,7 @@ docker：
       <div class="main-content">
         <div class="site-header">
   <a href="https://pluto1995.github.io/">
-  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1635264967875" alt="">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1635340948676" alt="">
   </a>
   <h1 class="site-title">
     清风拂杨柳丶
@@ -87,7 +87,7 @@ docker：
                 2021-10-26
               </span>
               <span>
-                4 min read
+                5 min read
               </span>
               
                 <a href="https://pluto1995.github.io/7-56mktRT/" class="post-tag">
@@ -200,6 +200,28 @@ common[common_util  service_util]  model  service[各种启动服务]  ...
         return new CorsWebFilter(configurationSource);
     }
 </code></pre>
+<h2 id="day03-品牌管理开发crud">Day03  品牌管理开发[CRUD]</h2>
+<h3 id="品牌管理">品牌管理</h3>
+<pre><code>CRUD:
+	好像相对简单一点点，因为只是涉及到单表，唯一需要注意的是，分页查询，下面说一下这个问题
+[分页查询]：
+	IPage 是mybatisplus 这个特有的属性，里面包含的字段属性可以多看看  这里是作为返回值类型 返回到前端，那Page呢，Page是mybatis有的一个属性，也可以作为返回值。
+	
+[CRUD]:
+	这个好像一般般
+	
+[其他]：
+	好像有模糊查询没有开发
+</code></pre>
+<h3 id="分类品牌管理">分类品牌管理</h3>
+<pre><code>总的来说也主要是CRUD，需要注意的是多表之间的关系，用来配合查询 和新增数据。
+
+【关于List集合的lambda表达式】
+	List.stream().   // 这个是主体，流的方式。后面可以接  map(Fun.test) 映射关系，forEach(item-&gt;{}) 遍历，filter(过滤条件).  collection(asList), 可以将返回值进行 聚合成集合。  
+</code></pre>
+<h3 id="总结">总结</h3>
+<pre><code>	总的来说  这部分比较基础，比较考验熟练度之类的。多写写，熟练思路，还有表结构之间的关系。但是好像没有用到索引的建立，还有SQL 的优化， 还是挺好的。
+</code></pre>
 
               </div>
               <div class="toc-container">
@@ -227,6 +249,13 @@ common[common_util  service_util]  model  service[各种启动服务]  ...
 </li>
 <li><a href="#gatewayservice">GateWayService</a></li>
 <li><a href="#cors-%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98">Cors 跨域问题</a></li>
+</ul>
+</li>
+<li><a href="#day03-%E5%93%81%E7%89%8C%E7%AE%A1%E7%90%86%E5%BC%80%E5%8F%91crud">Day03  品牌管理开发[CRUD]</a>
+<ul>
+<li><a href="#%E5%93%81%E7%89%8C%E7%AE%A1%E7%90%86">品牌管理</a></li>
+<li><a href="#%E5%88%86%E7%B1%BB%E5%93%81%E7%89%8C%E7%AE%A1%E7%90%86">分类品牌管理</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
 </ul>
 </li>
 </ul>
