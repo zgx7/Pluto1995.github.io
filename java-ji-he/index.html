@@ -1,0 +1,302 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java集合 | 清风拂杨柳丶</title>
+<link rel="shortcut icon" href="https://pluto1995.github.io//favicon.ico?v=1635398663828">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pluto1995.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java集合 | 清风拂杨柳丶 - Atom Feed" href="https://pluto1995.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="Java集合
+一、*ArrayList
+	ArrayList  底层是通过  Object[] 来进行数据存储， 顺序结构，长度固定，相对简单 [初始胡数组长度为10，不足10，取10]
+自动扩容机制:
+	添加元素前，会进行检查添加元素后，..." />
+    <meta name="keywords" content="Java" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://pluto1995.github.io/">
+  <img class="avatar" src="https://pluto1995.github.io//images/avatar.png?v=1635398663828" alt="">
+  </a>
+  <h1 class="site-title">
+    清风拂杨柳丶
+  </h1>
+  <p class="site-description">
+    只写感悟，想法，思考。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java集合
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-10-28
+              </span>
+              <span>
+                8 min read
+              </span>
+              
+                <a href="https://pluto1995.github.io/nYuOeWgwW/" class="post-tag">
+                  # Java
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="java集合">Java集合</h1>
+<h2 id="一-arraylist">一、*ArrayList</h2>
+<pre><code>	ArrayList  底层是通过  Object[] 来进行数据存储， 顺序结构，长度固定，相对简单 [初始胡数组长度为10，不足10，取10]
+自动扩容机制:
+	添加元素前，会进行检查添加元素后，原数组的长度是否能够完全容纳 添加元素，不满足就会触发 扩容机制  grow(); 扩容到原数组长度的1.5倍大小。
+
+常用方法：
+	基本上也是操作底层数组，长度不够时，会创建新长度的数组，进行重新指向；删除元素时，会进行元素前移，末尾置空
+</code></pre>
+<h2 id="二-linkedlist">二、*LinkedList</h2>
+<pre><code>LinkedList：
+	由于同时实现了 List 和Queue 和 Deque[双向队列]  所以具有三者的通用方法
+	底层主要由三个属性：firstNode  lastNode  itemData； 
+	Node&lt;E&gt; node；节点类，node中封装了 上一个节点prev  下一个节点next 和自己携带的数据 element,每个节点通过上下两个节点相互引用进行绑定，双向引用感觉结构比较稳定。
+	由于是双向绑定，在add remove peek get [CRUD] 操作时，需要双向解绑，在重新双向绑定新节点，将需要删除的元素置空。
+	当一个对象在没有元素引用时，会被GC进行回收
+	
+	
+需要注意的：
+	由于链表结构存在头、尾结构，所以在处理这两个位置时，需要多思考，还有LinkedList中first和last 引用节点的问题，没有操作这里，可能会导致GC无法回收 或者回收错误。
+	node 节点数据也可以存放null 和 Object  而两者在进行比较时，用的方式不一样  [null == ]，[Object.equals()]
+</code></pre>
+<h2 id="三-arraydeque">三、ArrayDeque</h2>
+<pre><code class="language-java">ArrayDeque:
+	跟ArrayList 一样，底层是一个Object[] ,不同的是，初始化长度是16，不允许存放null值，根据head tail 进行首位判断，head不常等于0，
+	巧妙的地方在于 add() 添加 核心是 'head = (head-1)&amp;(element.length)' 这一个计算公式，它通过当head为正数时，取余实现head=head-1，即head前移一位；当head等于-1时[只有-1这种情况]，进行取模操作，即等于下标最大值，相当于进行首位相连；【tail操作也是同理】，当head==tail时，会进行扩容；
+	
+ArrayDeque的扩容机制；
+	不同于ArrayList 的扩容机制，ArrayListDeque是进行两倍扩容，触发扩容时，创建一个两倍原数组长度的新数组，然后head右边的值顺序复制到新数组，在复制head左边的 按照下标大小从小到大复制
+
+其他：
+	ArrayDeque在添加或者通过构造函数进行长度较长的集合转换时，会计算和判断ArrayDeque的可扩容长度；
+	private void allocateElements(int numElements) {
+        int initialCapacity = MIN_INITIAL_CAPACITY;
+        // Find the best power of two to hold elements.
+        // Tests &quot;&lt;=&quot; because arrays aren't kept full.
+        if (numElements &gt;= initialCapacity) {
+            initialCapacity = numElements;
+            initialCapacity |= (initialCapacity &gt;&gt;&gt;  1);
+            initialCapacity |= (initialCapacity &gt;&gt;&gt;  2);
+            initialCapacity |= (initialCapacity &gt;&gt;&gt;  4);
+            initialCapacity |= (initialCapacity &gt;&gt;&gt;  8);
+            initialCapacity |= (initialCapacity &gt;&gt;&gt; 16);
+            initialCapacity++;
+
+            if (initialCapacity &lt; 0)   // Too many elements, must back off
+                initialCapacity &gt;&gt;&gt;= 1;// Good luck allocating 2 ^ 30 elements
+        }
+        elements = new Object[initialCapacity];
+    }
+这段代码是比较由意思的：当你输入一个数[int类型]，它来判断距离你这个数下一个2的N次方的数是多少；
+    原理： 当你输入一个数，通过‘|’运算，从这个数为1的最高位，开始向右进行 全部变为1操作，因为最高位16位数[int],所以当你这个数从为1的最高位开始向右都给你变成1，然后在+1 就得到你这个数下一个2的N次方的数了
+</code></pre>
+<h2 id="四-hashmap和hashset">四、HashMap和HashSet</h2>
+<pre><code>【HashMap】：
+	Java7——底层是数组+链表实现：初始化数组长度为16；[一开始是空，HashMap的空参构造器只指定了增长因子，没有指定数组长度的大小，第一次put添加元素时，会检查底层数组是否为空，然后在进行初始化]
+	put方法：第一次检查并初始化，长度16，然后这里我们把数组长度看作N[因为要牵扯到扩容，这里的n值为2的幂次，为什么呢，方便-1后，低位全是1，然后通过(n-1)‘&amp;’num操作，将num截取到只在0-（n-1）以内],添加的key 会计算hash值，通过取余得到hash，然后数组查找这个hash，得到tab[i],就是这个链表，在然后遍历这个链表有没有对应的key，有就覆盖，没有就在后面新增[Java8，Java7在前面新增]；
+【值得注意的是】HashMap中的链表是单向的。这里需要区别  [Node&lt;K,V&gt;]只有nextNode  没有prevNode
+	
+【数据扩容】：数组在到达阈值时，[与扩容因子有关]在扩容时两倍扩容，链表个数超过8时，会变成红黑树结构。
+	这里主要说一下数组扩容后，数据的前移，即数据所在数组下标是否需要变化。原来数据的hash需要重新计算
+【个人理解】： 
+	因为数组每次扩容到原来长度的两倍，在二进制中相当于向左移动一位，就是开放了一个高位，如果重新计算的hash高位是0，那么就下标就不需要改变，数据也不需要迁移。如果是1，就需要迁移数据。那么 如何迁移数据呢？
+	【数据迁移】，跟新增类似，根据重新的hash值进行匹配。
+</code></pre>
+<pre><code>【HashSet】
+	底层是对HashMap进行的封装，相关的方法是合适的HashMap方法进行调用实现。
+	其中，HashSet的值对应HashMap的key，存储的value是new Object[]
+</code></pre>
+<h2 id="五-linkedhashmap和linkedhashset">五、LinkedHashMap和LinkedHashSet</h2>
+<pre><code>【前要】
+	LinkedHashSet也是对LinkedHashMap的一种封装，所以我们主要说一下LinkendHashMap
+【LinkedHashMap】
+	结构：与HashMap相比较，LinkedHashMap的链表是双向的，通过一个哑元head 把所有的entries 都首尾串联起来了[通过Entry实现 而不是Node]
+	新增：在冲突链头部插入新的entry元素[相当于在双向链的尾部插入]。
+	优点：在查找元素时，可以通过遍历双向链来查找key值对应的数据而不需要查找hash值，找到数组的下标，在遍历冲突链。
+</code></pre>
+<h2 id="六-treemap与treeset">六、 TreeMap与TreeSet</h2>
+<pre><code>【前提】
+	同样的TreeSet也是对TreeMap进行的一层封装，来实现的。
+【底层】
+	通过红黑树来实现，添加元素时，可能会进行 旋转 染色 重新引用 等操作，但是红黑树的 要求时 高树的高度不能超过低树高度的一倍。
+    
+【原理】
+	对红黑树的操作，增删改查 等问题。理解了红黑树 就不难理解 这部分了。
+</code></pre>
+<h2 id="七-weakhashmap-简单了解">七、WeakHashMap  [简单了解]</h2>
+<pre><code>弱引用类型，可能会被GC进行垃圾回收 。 所以需要特别合适的应用场景。
+</code></pre>
+<h2 id="八-其他拓展">八、其他拓展</h2>
+<h3 id="1-如何实现线程安全-juc">1.  如何实现线程安全 [JUC]</h3>
+<pre><code>【写时复制 实现】
+	ArrayList --&gt; CopyOnWriteArrayList
+	Set --&gt; CopyOnWriteArraySet
+原理：
+	写时复制就是在写文件时，会将数据复制出来一份，操作这个副本进行数据的增删改，然后在将指针指向操作完的副本，在这一过程中，其他的读操作不受影响， 但是数据不是及时的，而且写操作是单线程，不支持并发操作，[读读并发，读写并发，写写不并发]
+
+【Collections】
+	工具类可以将集合转换成  支持同步操作。
+
+</code></pre>
+<h3 id="2-红黑树的理解">2. 红黑树的理解</h3>
+<pre><code>【简单理解 -- 基于 2-3-4 结构】
+	2节点[一个元素]时，该节点颜色为黑色，添加一个节点时，会出现[一黑一红 看作3节点，这里有两种情况 向左还是向右 即较大的值在右下，还是较小的值在左下]，在添加一个节点时，会形成[一黑带两红 4节点形式]，即中间值会变成黑色，左边是较小值[红色]，右边是较大值[红色]， 差不多就这样。。。
+	当被插入的节点是四节点时，处于中间节点的值，会与父节点组成 三节点，后面的节点会组成 2节点和3节点形式，优先减少旋转的形式。
+</code></pre>
+<h1 id="总结">总结</h1>
+<pre><code>	集合是一种存储数据的容器，它通过 数组 链表 树结构等形式，来更多的保存数据，选择合适的结构有利于提高 操作数据的速度，减少复杂度。
+	了解好底层如何进行方法的实现，可以更清晰的理解数据是如何在结构中操作流转，不至于黑盒操作。
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#java%E9%9B%86%E5%90%88">Java集合</a>
+<ul>
+<li><a href="#%E4%B8%80-arraylist">一、*ArrayList</a></li>
+<li><a href="#%E4%BA%8C-linkedlist">二、*LinkedList</a></li>
+<li><a href="#%E4%B8%89-arraydeque">三、ArrayDeque</a></li>
+<li><a href="#%E5%9B%9B-hashmap%E5%92%8Chashset">四、HashMap和HashSet</a></li>
+<li><a href="#%E4%BA%94-linkedhashmap%E5%92%8Clinkedhashset">五、LinkedHashMap和LinkedHashSet</a></li>
+<li><a href="#%E5%85%AD-treemap%E4%B8%8Etreeset">六、 TreeMap与TreeSet</a></li>
+<li><a href="#%E4%B8%83-weakhashmap-%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3">七、WeakHashMap  [简单了解]</a></li>
+<li><a href="#%E5%85%AB-%E5%85%B6%E4%BB%96%E6%8B%93%E5%B1%95">八、其他拓展</a>
+<ul>
+<li><a href="#1-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-juc">1.  如何实现线程安全 [JUC]</a></li>
+<li><a href="#2-%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E7%90%86%E8%A7%A3">2. 红黑树的理解</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://pluto1995.github.io/java-dian-shang-xiang-mu/">
+              <h3 class="post-title">
+                Java电商项目
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://pluto1995.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
